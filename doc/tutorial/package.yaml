@@ -1,7 +1,7 @@
 name: tutorial-counter
 version: "0.1.0"
-maintainer: David Reaver
-maintainer: David Reaver
+maintainer: Alexander Sidorenko
+maintainer: Alexander Sidorenko
 stability: experimental
 license: MIT
 

@@ -1,14 +1,59 @@
-# Eventful: Haskell Event Sourcing + CQRS Library
+# Eventful
 
-[![CircleCI](https://circleci.com/gh/jdreaver/eventful.svg?style=svg)](https://circleci.com/gh/jdreaver/eventful)
+A library for building event sourcing systems in Haskell.
 
-`eventful` is a Haskell library intended to be used as a basis for applications
-built using event sourcing.
+## Build System
 
-## Documentation
+This project uses **Nix + Cabal** for reproducible builds with GHC 9.6.7.
 
-The main documentation is [here](https://eventful.readthedocs.io).
+### Quick Start
 
-## Examples
+```bash
+# Enter development environment
+nix develop
 
-See the [examples](./examples) directory for some example programs.
+# Build all packages
+cabal build all
+
+# Run tests
+cabal test eventful-core eventful-memory
+```
+
+### Automated Build & Test
+
+Use the provided script for a complete build and test cycle:
+
+```bash
+# Run comprehensive build and test
+./scripts/test-build.sh
+```
+
+This script will:
+- Enter the Nix development environment
+- Regenerate cabal files from package.yaml
+- Build core packages
+- Run all tests
+- Provide a summary of applied fixes
+
+### Available Commands (in nix develop)
+
+- `cabal build` - Build all packages
+- `cabal test` - Run all tests
+- `hpack` - Generate cabal files from package.yaml
+- `ghcid` - Continuous compilation
+
+### Database Tools
+
+- `psql` - PostgreSQL client
+- `sqlite3` - SQLite client
+
+## Project Status
+
+✅ **Working packages**:
+- eventful-core - Core event sourcing library
+- eventful-memory - In-memory implementations
+- eventful-test-helpers - Testing utilities
+
+⚠️ **Temporarily disabled** (due to dependency compatibility):
+- SQL backends (postgresql, sqlite)
+- Examples and tutorials

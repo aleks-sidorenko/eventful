@@ -7,7 +7,7 @@ module Eventful.TH.Projection
 
 import Data.Char (toLower)
 import Language.Haskell.TH
-import SumTypes.TH
+-- import SumTypes.TH  -- Disabled: not compatible with GHC 9.6
 
 import Eventful.Projection
 
@@ -51,7 +51,8 @@ mkProjection :: Name -> Name -> [Name] -> Q [Dec]
 mkProjection stateName stateDefault events = do
   -- Make event sum type
   let eventTypeName = nameBase stateName ++ "Event"
-  sumTypeDecls <- constructSumType eventTypeName defaultSumTypeOptions events
+  -- TODO: Restore sum-type-boilerplate functionality with GHC 9.6 compatible library  
+  let sumTypeDecls = []  -- constructSumType eventTypeName defaultSumTypeOptions events
 
   -- Make function to handle events from sum type to handlers.
   let handleFuncName = mkName $ "handle" ++ eventTypeName
@@ -85,7 +86,7 @@ handleFuncBody :: Name -> Name -> Q Clause
 handleFuncBody stateName event = do
   let
     statePattern = VarP (mkName "state")
-    eventPattern = ConP (mkName $ nameBase stateName ++ nameBase event) [VarP (mkName "event")]
+    eventPattern = ConP (mkName $ nameBase stateName ++ nameBase event) [] [VarP (mkName "event")]
     handleFuncName = mkName $ "handle" ++ nameBase event
   constructor <- [e| $(varE handleFuncName) $(varE $ mkName "state") $(varE $ mkName "event") |]
   return $ Clause [statePattern, eventPattern] (NormalB constructor) []

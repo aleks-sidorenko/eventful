@@ -1,9 +1,9 @@
 name: eventful-test-helpers
 version: "0.2.0"
-maintainer: David Reaver
+maintainer: Alexander Sidorenko
 synopsis: Common module used for eventful tests
 description: Common module used for eventful tests
-maintainer: David Reaver
+maintainer: Alexander Sidorenko
 stability: experimental
 category: Database,Eventsourcing
 license: MIT

@@ -2,6 +2,7 @@
 /.hpc/
 /cabal.sandbox.config
 /dist/
+/dist-newstyle/
 /tmp/
 *.cabal
 .stack-work/
@@ -9,3 +10,4 @@ database.db
 venv/
 doc/_build/
 database.db-*
+

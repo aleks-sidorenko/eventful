@@ -1,9 +1,9 @@
 name: eventful-dynamodb
 version: "0.2.0"
-maintainer: David Reaver
+maintainer: Alexander Sidorenko
 synopsis: Library for eventful DynamoDB event stores
 description: Library for eventful DynamoDB event stores
-maintainer: David Reaver
+maintainer: Alexander Sidorenko
 stability: experimental
 category: Database,Eventsourcing,AWS
 license: MIT

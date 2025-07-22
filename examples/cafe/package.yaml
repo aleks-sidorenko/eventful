@@ -1,9 +1,9 @@
 name: examples-cafe
 version: "0.1.0"
-maintainer: David Reaver
+maintainer: Alexander Sidorenko
 synopsis: Example cafe application for eventful
 description: Example cafe application for eventful
-maintainer: David Reaver
+maintainer: Alexander Sidorenko
 stability: experimental
 license: MIT
 
