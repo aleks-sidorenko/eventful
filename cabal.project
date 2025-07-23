@@ -1,11 +1,11 @@
 packages:
-  eventful-core
-  eventful-memory
-  eventful-postgresql
-  eventful-sql-common
-  eventful-sqlite
-  eventful-test-helpers
-  eventful-dynamodb
+  eventium-core
+  eventium-memory
+  eventium-postgresql
+  eventium-sql-common
+  eventium-sqlite
+  eventium-test-helpers
+  eventium-dynamodb
   examples/cafe
   examples/bank
   examples/counter-cli

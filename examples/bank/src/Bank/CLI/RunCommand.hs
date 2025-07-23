@@ -5,7 +5,7 @@ module Bank.CLI.RunCommand
 import Control.Monad (void)
 import Database.Persist.Sqlite
 
-import Eventful
+import Eventium
 
 import Bank.Models
 import Bank.CLI.Options

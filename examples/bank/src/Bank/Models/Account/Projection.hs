@@ -18,7 +18,7 @@ import Data.Aeson.TH
 import Data.List (delete, find)
 import SumTypesX.TH
 
-import Eventful
+import Eventium
 
 import Bank.Models.Account.Events
 import Bank.Json

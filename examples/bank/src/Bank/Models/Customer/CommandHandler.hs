@@ -7,7 +7,7 @@ module Bank.Models.Customer.CommandHandler
 
 import SumTypesX.TH
 
-import Eventful
+import Eventium
 
 import Bank.Models.Customer.Commands
 import Bank.Models.Customer.Events

@@ -11,7 +11,7 @@ import Control.Lens
 import Data.Maybe (isNothing)
 import SumTypesX.TH
 
-import Eventful
+import Eventium
 
 import Bank.Models.Account.Commands
 import Bank.Models.Account.Events

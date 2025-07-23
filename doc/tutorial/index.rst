@@ -1,9 +1,9 @@
 Tutorial
 ========
 
-This tutorial will introduce new users to the concepts behind ``eventful``.
+This tutorial will introduce new users to the concepts behind ``eventium``.
 Additionally, once you read this tutorial you will know how to build a simple
-event sourced application using ``eventful``.
+event sourced application using ``eventium``.
 
 .. toctree::
   :maxdepth: 1

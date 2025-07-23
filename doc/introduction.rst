@@ -1,7 +1,7 @@
 Introduction
 ============
 
-``eventful`` is a Haskell library for building event sourced applications.
+``eventium`` is a Haskell library for building event sourced applications.
 
 What is Event Sourcing?
 -----------------------
@@ -36,7 +36,7 @@ explanation, here are some great introduction materials:
 Features
 --------
 
-The goal of ``eventful`` is not to be a framework that imposes design decisions
+The goal of ``eventium`` is not to be a framework that imposes design decisions
 on application developers. It is meant to be a toolbox from which you can
 choose specific features to construct your application. Some features include:
 
@@ -49,7 +49,7 @@ choose specific features to construct your application. Some features include:
   ``CommandHandler``, and ``ProcessManager``. All of these integrate with
   ``EventStore`` so you get transparent integration with your underlying event
   storage.
-* Extremely flexible serialization system. All ``eventful`` components that do
+* Extremely flexible serialization system. All ``eventium`` components that do
   serialization use a type parameter called ``serialized``. You provide the
   ``serialized`` type and functions to serialize/deserialize your events, and
   we handle storage to one of the available backends.
@@ -57,8 +57,8 @@ choose specific features to construct your application. Some features include:
   we don't force the use of any particular monad stack on you. If your event
   store's monad supports transactions, like ``SqlPersistT`` or ``STM`` does,
   then you get transactional semantics for free.
-* ``eventful`` aims to use the most vanilla Haskell possible. We prefer value
+* ``eventium`` aims to use the most vanilla Haskell possible. We prefer value
   types over type classes, avoid any type-level computations, etc. This makes
   the core API extensible and easy to understand. If you want, you can easily
   add more advanced type system features to your application while still
-  maintaining the ability to use the core ``eventful`` constructs.
+  maintaining the ability to use the core ``eventium`` constructs.
