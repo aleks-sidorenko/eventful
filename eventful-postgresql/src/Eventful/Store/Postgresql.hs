@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
 -- | Defines an Postgresql event store.
 
@@ -14,6 +16,7 @@ import Data.Monoid ((<>))
 import Data.Text (Text)
 import Database.Persist
 import Database.Persist.Sql
+import Database.Persist.Names (FieldNameDB(..), EntityNameDB(..))
 
 import Eventful.Store.Class
 import Eventful.Store.Sql
@@ -21,7 +24,7 @@ import Eventful.Store.Sql
 -- | An 'EventStore' that uses a PostgreSQL database as a backend. Use
 -- 'SqlEventStoreConfig' to configure this event store.
 postgresqlEventStoreWriter
-  :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend)
+  :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend, SafeToInsert entity)
   => SqlEventStoreConfig entity serialized
   -> VersionedEventStoreWriter (SqlPersistT m) serialized
 postgresqlEventStoreWriter config = EventStoreWriter $ transactionalExpectedWriteHelper getLatestVersion storeEvents'
@@ -29,8 +32,8 @@ postgresqlEventStoreWriter config = EventStoreWriter $ transactionalExpectedWrit
     getLatestVersion = sqlMaxEventVersion config maxPostgresVersionSql
     storeEvents' = sqlStoreEvents config (Just tableLockFunc) maxPostgresVersionSql
 
-maxPostgresVersionSql :: DBName -> DBName -> DBName -> Text
-maxPostgresVersionSql (DBName tableName) (DBName uuidFieldName) (DBName versionFieldName) =
+maxPostgresVersionSql :: FieldNameDB -> FieldNameDB -> FieldNameDB -> Text
+maxPostgresVersionSql (FieldNameDB tableName) (FieldNameDB uuidFieldName) (FieldNameDB versionFieldName) =
   "SELECT COALESCE(MAX(" <> versionFieldName <> "), -1) FROM " <> tableName <> " WHERE " <> uuidFieldName <> " = ?"
 
 -- | We need to lock the events table or else our global sequence number might

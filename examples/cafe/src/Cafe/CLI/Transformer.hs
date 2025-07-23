@@ -3,6 +3,7 @@ module Cafe.CLI.Transformer
   , runCLI
   , runDB
   , cliEventStore
+  , cliEventStoreReader
   , cliGloballyOrderedEventStore
   ) where
 
@@ -25,8 +26,11 @@ runDB query = do
   pool <- ask
   liftIO $ runSqlPool query pool
 
-cliEventStore :: (MonadIO m) => EventStore JSONString (SqlPersistT m)
-cliEventStore = sqliteEventStore defaultSqlEventStoreConfig
+cliEventStore :: (MonadIO m) => VersionedEventStoreWriter (SqlPersistT m) JSONString
+cliEventStore = sqliteEventStoreWriter defaultSqlEventStoreConfig
 
-cliGloballyOrderedEventStore :: (MonadIO m) => GloballyOrderedEventStore JSONString (SqlPersistT m)
-cliGloballyOrderedEventStore = sqlGloballyOrderedEventStore defaultSqlEventStoreConfig
+cliEventStoreReader :: (MonadIO m) => VersionedEventStoreReader (SqlPersistT m) JSONString
+cliEventStoreReader = sqlEventStoreReader defaultSqlEventStoreConfig
+
+cliGloballyOrderedEventStore :: (MonadIO m) => GlobalEventStoreReader (SqlPersistT m) JSONString
+cliGloballyOrderedEventStore = sqlGlobalEventStoreReader defaultSqlEventStoreConfig

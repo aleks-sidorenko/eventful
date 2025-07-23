@@ -8,7 +8,7 @@ module Eventful.TH.SumTypeSerializer
 
 import Data.Char (toLower)
 import Language.Haskell.TH
-import SumTypes.TH
+import SumTypesX.TH
 
 -- | This is a template haskell function that creates a 'Serializer' between
 -- two sum types. The first sum type must be a subset of the second sum type.
@@ -65,6 +65,7 @@ mkSumTypeSerializer serializerName sourceType targetType = do
   let
     serializeFuncName = firstCharToLower (nameBase sourceType) ++ "To" ++ nameBase targetType
     deserializeFuncName = firstCharToLower (nameBase targetType) ++ "To" ++ nameBase sourceType
+  -- Generate the sum type converter functions
   serializeDecls <- sumTypeConverter serializeFuncName sourceType targetType
   deserializeDecls <- partialSumTypeConverter deserializeFuncName targetType sourceType
 

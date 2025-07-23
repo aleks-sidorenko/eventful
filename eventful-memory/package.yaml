@@ -1,9 +1,8 @@
 name: eventful-memory
 version: "0.2.0"
-maintainer: David Reaver
+maintainer: David Reaver, Alexander Sidorenko
 synopsis: In-memory implementations for eventful
 description: In-memory implementations for eventful
-maintainer: David Reaver
 stability: experimental
 category: Database,Eventsourcing
 license: MIT
@@ -40,3 +39,5 @@ tests:
       - hspec
       - HUnit
       - eventful-test-helpers
+    build-tools:
+      - hspec-discover

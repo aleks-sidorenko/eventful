@@ -7,7 +7,7 @@ module Eventful.TH.Projection
 
 import Data.Char (toLower)
 import Language.Haskell.TH
-import SumTypes.TH
+import SumTypesX.TH
 
 import Eventful.Projection
 
@@ -51,6 +51,7 @@ mkProjection :: Name -> Name -> [Name] -> Q [Dec]
 mkProjection stateName stateDefault events = do
   -- Make event sum type
   let eventTypeName = nameBase stateName ++ "Event"
+  -- Make event sum type
   sumTypeDecls <- constructSumType eventTypeName defaultSumTypeOptions events
 
   -- Make function to handle events from sum type to handlers.
@@ -85,7 +86,7 @@ handleFuncBody :: Name -> Name -> Q Clause
 handleFuncBody stateName event = do
   let
     statePattern = VarP (mkName "state")
-    eventPattern = ConP (mkName $ nameBase stateName ++ nameBase event) [VarP (mkName "event")]
+    eventPattern = ConP (mkName $ nameBase stateName ++ nameBase event) [] [VarP (mkName "event")]
     handleFuncName = mkName $ "handle" ++ nameBase event
   constructor <- [e| $(varE handleFuncName) $(varE $ mkName "state") $(varE $ mkName "event") |]
   return $ Clause [statePattern, eventPattern] (NormalB constructor) []

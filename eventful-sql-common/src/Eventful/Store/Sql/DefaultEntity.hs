@@ -1,8 +1,16 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 -- | Definition for a default Entity to use with a SQL event store.
 
@@ -24,7 +32,7 @@ import Eventful.Store.Sql.Orphans ()
 
 share [mkPersist sqlSettings, mkMigrate "migrateSqlEvent"] [persistLowerCase|
 SqlEvent sql=events
-    Id SequenceNumber sql=sequence_number
+    Id SequenceNumber sql=sequence_number default=0 autoincrement
     uuid UUID
     version EventVersion
     event JSONString

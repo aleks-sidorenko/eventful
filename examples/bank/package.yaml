@@ -1,9 +1,8 @@
 name: examples-bank
 version: "0.1.0"
-maintainer: David Reaver
+maintainer: David Reaver, Alexander Sidorenko
 synopsis: Example bank application for eventful
 description: Example bank application for eventful
-maintainer: David Reaver
 stability: experimental
 license: MIT
 
@@ -26,7 +25,7 @@ dependencies:
   - persistent-template
   - safe
   - stm
-  - sum-type-boilerplate
+  - x-sum-type-boilerplate
   - template-haskell
   - text
 

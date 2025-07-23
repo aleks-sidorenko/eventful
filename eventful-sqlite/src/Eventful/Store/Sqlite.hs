@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
 -- | Defines an Sqlite event store.
 
@@ -12,10 +13,11 @@ module Eventful.Store.Sqlite
   ) where
 
 import Control.Monad.Reader
-import Data.Monoid
 import Data.Text (Text)
 import Database.Persist
 import Database.Persist.Sql
+import Database.Persist.Names (FieldNameDB(..), EntityNameDB(..))
+import Database.Persist.Class (SafeToInsert)
 
 import Eventful.Store.Class
 import Eventful.Store.Sql
@@ -23,7 +25,7 @@ import Eventful.Store.Sql
 -- | An 'EventStoreWriter' that uses an SQLite database as a backend. Use
 -- 'SqlEventStoreConfig' to configure this event store.
 sqliteEventStoreWriter
-  :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend)
+  :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend, SafeToInsert entity)
   => SqlEventStoreConfig entity serialized
   -> VersionedEventStoreWriter (SqlPersistT m) serialized
 sqliteEventStoreWriter config = EventStoreWriter $ transactionalExpectedWriteHelper getLatestVersion storeEvents'
@@ -31,8 +33,8 @@ sqliteEventStoreWriter config = EventStoreWriter $ transactionalExpectedWriteHel
     getLatestVersion = sqlMaxEventVersion config maxSqliteVersionSql
     storeEvents' = sqlStoreEvents config Nothing maxSqliteVersionSql
 
-maxSqliteVersionSql :: DBName -> DBName -> DBName -> Text
-maxSqliteVersionSql (DBName tableName) (DBName uuidFieldName) (DBName versionFieldName) =
+maxSqliteVersionSql :: FieldNameDB -> FieldNameDB -> FieldNameDB -> Text
+maxSqliteVersionSql (FieldNameDB tableName) (FieldNameDB uuidFieldName) (FieldNameDB versionFieldName) =
   "SELECT IFNULL(MAX(" <> versionFieldName <> "), -1) FROM " <> tableName <> " WHERE " <> uuidFieldName <> " = ?"
 
 -- | This functions runs the migrations required to create the events table and
@@ -48,8 +50,8 @@ initializeSqliteEventStore SqlEventStoreConfig{..} pool = do
 
   -- Create index on uuid field so retrieval is very fast
   let
-    (DBName tableName) = tableDBName (sqlEventStoreConfigSequenceMakeEntity undefined undefined undefined)
-    (DBName uuidFieldName) = fieldDBName sqlEventStoreConfigSequenceNumberField
+    tableName = unEntityNameDB $ tableDBName (sqlEventStoreConfigSequenceMakeEntity undefined undefined undefined)
+    uuidFieldName = unFieldNameDB $ fieldDBName sqlEventStoreConfigSequenceNumberField
     indexSql =
       "CREATE INDEX IF NOT EXISTS " <>
       uuidFieldName <> "_index" <>

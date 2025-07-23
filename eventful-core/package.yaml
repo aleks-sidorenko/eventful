@@ -1,9 +1,8 @@
 name: eventful-core
 version: "0.2.0"
-maintainer: David Reaver
+maintainer: David Reaver, Alexander Sidorenko
 synopsis: Core module for eventful
 description: Core module for eventful
-maintainer: David Reaver
 stability: experimental
 category: Database,Eventsourcing
 license: MIT
@@ -23,7 +22,7 @@ dependencies:
   - contravariant
   - http-api-data
   - path-pieces
-  - sum-type-boilerplate
+  - x-sum-type-boilerplate
   - template-haskell
   - text
   - transformers
@@ -44,3 +43,5 @@ tests:
     dependencies:
       - hspec
       - HUnit
+    build-tools:
+      - hspec-discover

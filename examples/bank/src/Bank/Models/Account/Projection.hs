@@ -16,7 +16,7 @@ module Bank.Models.Account.Projection
 import Control.Lens
 import Data.Aeson.TH
 import Data.List (delete, find)
-import SumTypes.TH
+import SumTypesX.TH
 
 import Eventful
 
@@ -40,9 +40,10 @@ data PendingAccountTransfer
   , pendingAccountTransferTargetAccount :: UUID
   } deriving (Show, Eq)
 
+deriveJSON (unPrefixLower "pendingAccountTransfer") ''PendingAccountTransfer
+
 makeLenses ''Account
 deriveJSON (unPrefixLower "_account") ''Account
-deriveJSON (unPrefixLower "pendingAccountTransfer") ''PendingAccountTransfer
 
 -- | Account balance minus pending balance
 accountAvailableBalance :: Account -> Double

@@ -1,0 +1,15 @@
+packages:
+  eventful-core
+  eventful-memory
+  eventful-postgresql
+  eventful-sql-common
+  eventful-sqlite
+  eventful-test-helpers
+  eventful-dynamodb
+  examples/cafe
+  examples/bank
+  examples/counter-cli
+  doc/tutorial
+
+-- Allow newer versions of dependencies
+allow-newer: true 
