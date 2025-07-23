@@ -14,8 +14,8 @@ import Data.Aeson.Encode.Pretty
 import qualified Data.ByteString.Lazy.Char8 as BSL
 import Database.Persist.Sqlite
 
-import Eventful
-import Eventful.Store.Sqlite
+import Eventium
+import Eventium.Store.Sqlite
 
 import Bank.Models
 import Bank.ProcessManagers.TransferManager

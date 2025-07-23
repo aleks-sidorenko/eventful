@@ -11,7 +11,7 @@ module Bank.Models.Account.Commands
 
 import Language.Haskell.TH (Name)
 
-import Eventful.UUID
+import Eventium.UUID
 
 import Bank.Json
 

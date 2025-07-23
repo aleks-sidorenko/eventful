@@ -10,8 +10,8 @@ module Cafe.CLI.Transformer
 import Control.Monad.Reader
 import Database.Persist.Sql
 
-import Eventful
-import Eventful.Store.Sqlite
+import Eventium
+import Eventium.Store.Sqlite
 
 type CLI = ReaderT ConnectionPool IO
 

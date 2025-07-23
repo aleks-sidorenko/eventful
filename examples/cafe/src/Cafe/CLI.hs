@@ -15,8 +15,8 @@ import Data.Text (pack)
 import Database.Persist.Sqlite
 import Safe
 
-import Eventful.Store.Sqlite
-import Eventful
+import Eventium.Store.Sqlite
+import Eventium
 
 import Cafe.CLI.Options
 import Cafe.CLI.Transformer

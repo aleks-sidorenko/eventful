@@ -1,0 +1,47 @@
+name: eventium-core
+version: "0.1.0"
+maintainer: Alexander Sidorenko
+synopsis: Core module for eventium
+description: Core module for eventium
+stability: experimental
+category: Database,Eventsourcing
+license: MIT
+license-file: LICENSE.md
+
+github: aleks-sidorenko/eventium
+
+extra-source-files:
+  - CHANGELOG.md
+  - README.md
+
+dependencies:
+  - base >= 4.9 && < 5
+
+  - aeson
+  - containers
+  - contravariant
+  - http-api-data
+  - path-pieces
+  - x-sum-type-boilerplate
+  - template-haskell
+  - text
+  - transformers
+  - uuid
+
+library:
+  source-dirs:
+    - src
+  ghc-options: -Wall
+
+tests:
+  spec:
+    main: Spec.hs
+    ghc-options: -Wall
+    source-dirs:
+      - tests
+      - src
+    dependencies:
+      - hspec
+      - HUnit
+    build-tools:
+      - hspec-discover

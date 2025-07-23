@@ -1,4 +1,4 @@
-# eventful Changelog
+# eventium Changelog
 
 ## 0.3.0
 
@@ -45,7 +45,7 @@
   table. Fixed with an explicit lock on the events table.
 * Restructured record types for events paired with version numbers and global
   sequence numbers.
-* Created an in-memory event store for `MonadState` in `eventful-memory`.
+* Created an in-memory event store for `MonadState` in `eventium-memory`.
 
 ## 0.1.1
 
@@ -54,5 +54,5 @@
 
 ## 0.1.0
 
-Initial Hackage release of `eventful`. It is already fairly full-featured along
+Initial Hackage release of `eventium`. It is already fairly full-featured along
 with some documentation and examples.

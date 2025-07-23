@@ -1,15 +1,14 @@
 packages:
-  eventful-core
-  eventful-memory
-  eventful-postgresql
-  eventful-sql-common
-  eventful-sqlite
-  eventful-test-helpers
-  eventful-dynamodb
+  eventium-core
+  eventium-memory
+  eventium-postgresql
+  eventium-sql-common
+  eventium-sqlite
+  eventium-test-helpers
+  -- eventium-dynamodb  -- disabled for now due to outdated AWS dependencies
   examples/cafe
   examples/bank
   examples/counter-cli
-  doc/tutorial
 
 -- Allow newer versions of dependencies
 allow-newer: true 

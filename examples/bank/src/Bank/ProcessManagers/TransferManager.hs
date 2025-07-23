@@ -13,7 +13,7 @@ import Data.Maybe (isNothing)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 
-import Eventful
+import Eventium
 
 import Bank.Models
 

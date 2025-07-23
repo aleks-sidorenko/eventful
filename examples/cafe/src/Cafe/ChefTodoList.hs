@@ -17,9 +17,9 @@ import Database.Persist.Sqlite
 import Options.Applicative
 import System.Console.ANSI (clearScreen, setCursorPosition)
 
-import Eventful
-import Eventful.ReadModel.Memory
-import Eventful.Store.Sqlite
+import Eventium
+import Eventium.ReadModel.Memory
+import Eventium.Store.Sqlite
 
 import Cafe.CLI.Options (parseDatabaseFileOption)
 import Cafe.CLI.Transformer

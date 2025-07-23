@@ -9,6 +9,6 @@ fi
 
 version="$1"
 
-for file in eventful-*/package.yaml; do
+for file in eventium-*/package.yaml; do
   sed -i "s/version:.*/version: \"$version\"/" "$file"
 done
