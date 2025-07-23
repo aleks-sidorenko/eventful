@@ -1,9 +1,9 @@
 name: eventful-postgresql
 version: "0.2.0"
-maintainer: Alexander Sidorenko
+maintainer: David Reaver, Alexander Sidorenko
 synopsis: Postgres implementations for eventful
 description: Postgres implementations for eventful
-maintainer: Alexander Sidorenko
+maintainer: David Reaver, Alexander Sidorenko
 stability: experimental
 category: Database,Eventsourcing,PostgreSQL
 license: MIT

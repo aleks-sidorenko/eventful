@@ -1,9 +1,9 @@
 name: eventful-sql-common
 version: "0.2.0"
-maintainer: Alexander Sidorenko
+maintainer: David Reaver, Alexander Sidorenko
 synopsis: Common library for SQL event stores
 description: Common library for SQL event stores
-maintainer: Alexander Sidorenko
+maintainer: David Reaver, Alexander Sidorenko
 stability: experimental
 category: Database,Eventsourcing
 license: MIT

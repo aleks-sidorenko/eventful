@@ -1,6 +1,6 @@
 name: examples-counter-cli
 version: "0.1.0"
-maintainer: Alexander Sidorenko
+maintainer: David Reaver, Alexander Sidorenko
 synopsis: Example Counter cli application for eventful
 description: Example Counter cli application for eventful
 stability: experimental

@@ -1,9 +1,9 @@
 name: eventful-sqlite
 version: "0.2.0"
-maintainer: Alexander Sidorenko
+maintainer: David Reaver, Alexander Sidorenko
 synopsis: SQLite implementations for eventful
 description: SQLite implementations for eventful
-maintainer: Alexander Sidorenko
+maintainer: David Reaver, Alexander Sidorenko
 stability: experimental
 category: Database,Eventsourcing,SQLite
 license: MIT

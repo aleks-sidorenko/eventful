@@ -1,6 +1,6 @@
 name: examples-bank
 version: "0.1.0"
-maintainer: Alexander Sidorenko
+maintainer: David Reaver, Alexander Sidorenko
 synopsis: Example bank application for eventful
 description: Example bank application for eventful
 stability: experimental
