@@ -50,10 +50,10 @@ This script will:
 ## Project Status
 
 ✅ **Working packages**:
-- eventful-core - Core event sourcing library
+- eventful-core - Core event sourcing library (with Template Haskell support)
 - eventful-memory - In-memory implementations
 - eventful-test-helpers - Testing utilities
 
 ⚠️ **Temporarily disabled** (due to dependency compatibility):
 - SQL backends (postgresql, sqlite)
-- Examples and tutorials
+- Some examples and tutorials

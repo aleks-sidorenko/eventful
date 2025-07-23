@@ -3,7 +3,6 @@ version: "0.1.0"
 maintainer: Alexander Sidorenko
 synopsis: Example Counter cli application for eventful
 description: Example Counter cli application for eventful
-maintainer: Alexander Sidorenko
 stability: experimental
 license: MIT
 

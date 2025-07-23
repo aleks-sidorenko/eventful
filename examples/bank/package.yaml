@@ -3,7 +3,6 @@ version: "0.1.0"
 maintainer: Alexander Sidorenko
 synopsis: Example bank application for eventful
 description: Example bank application for eventful
-maintainer: Alexander Sidorenko
 stability: experimental
 license: MIT
 
@@ -26,7 +25,7 @@ dependencies:
   - persistent-template
   - safe
   - stm
-  # - sum-type-boilerplate  # Disabled: not compatible with GHC 9.6
+  - x-sum-type-boilerplate
   - template-haskell
   - text
 

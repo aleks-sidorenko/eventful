@@ -6,8 +6,7 @@ import Control.Monad.Reader (ask)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.UTF8 as UTF8
 import Data.Maybe (maybe)
-import Data.Monoid ((<>))
-import Data.Text (Text, intercalate)
+import Data.Text (Text)
 import Database.Persist.Postgresql
 import System.Environment (lookupEnv)
 import Test.Hspec
@@ -53,22 +52,10 @@ makeStore = do
 getEnvDef :: (MonadIO m) => String -> ByteString -> m ByteString
 getEnvDef name def = liftIO $ maybe def UTF8.fromString <$> lookupEnv name
 
-getTables :: MonadIO m => SqlPersistT m [Text]
-getTables = do
-    tables <-
-      rawSql
-      "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';"
-      []
-    return $ map unSingle tables
-
 truncateTables :: MonadIO m => SqlPersistT m ()
 truncateTables = do
-    tables <- getTables
-    sqlBackend <- ask
-    let
-      escapedTables = map (connEscapeName sqlBackend . DBName) tables
-      query = "TRUNCATE TABLE " <> intercalate ", " escapedTables <> " RESTART IDENTITY CASCADE"
-    rawExecute query []
+    -- Simplified table truncation without using deprecated API
+    rawExecute "DELETE FROM events" []
 
 postgresStoreRunner :: EventStoreRunner (SqlPersistT IO)
 postgresStoreRunner = EventStoreRunner $ \action -> do

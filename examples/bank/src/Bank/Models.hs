@@ -16,7 +16,7 @@ module Bank.Models
   ) where
 
 import Data.Aeson.TH
-import SumTypes.TH
+import SumTypesX.TH
 
 import Eventful
 import Eventful.TH

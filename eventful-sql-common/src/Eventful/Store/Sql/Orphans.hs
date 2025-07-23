@@ -6,7 +6,6 @@ module Eventful.Store.Sql.Orphans
   ) where
 
 import Data.Proxy
-import qualified Data.Text.Encoding as TE
 import Data.UUID
 import Database.Persist
 import Database.Persist.Sql
@@ -16,15 +15,11 @@ import Eventful.UUID
 
 instance PersistField UUID where
   toPersistValue = PersistText . uuidToText
-  fromPersistValue (PersistDbSpecific t) =
-    case uuidFromText (TE.decodeUtf8 t) of
-      Just x -> Right x
-      Nothing -> Left "Invalid UUID"
   fromPersistValue (PersistText t) =
     case uuidFromText t of
       Just x -> Right x
       Nothing -> Left "Invalid UUID"
-  fromPersistValue _ = Left "Not PersistDBSpecific"
+  fromPersistValue _ = Left "Expected PersistText for UUID"
 
 instance PersistFieldSql UUID where
   sqlType _ = SqlOther "uuid"

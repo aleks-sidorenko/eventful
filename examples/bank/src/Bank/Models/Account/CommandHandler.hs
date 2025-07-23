@@ -9,7 +9,7 @@ module Bank.Models.Account.CommandHandler
 
 import Control.Lens
 import Data.Maybe (isNothing)
-import SumTypes.TH
+import SumTypesX.TH
 
 import Eventful
 

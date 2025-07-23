@@ -7,14 +7,9 @@ packages:
   eventful-test-helpers
   eventful-dynamodb
   examples/cafe
-  -- Temporarily disabled due to sum-type-boilerplate incompatibility:
-  -- examples/bank
-  -- examples/counter-cli
-  -- doc/tutorial
+  examples/bank
+  examples/counter-cli
+  doc/tutorial
 
 -- Allow newer versions of dependencies
-allow-newer: true
-
--- Skip packages that have issues
-constraints:
-  sum-type-boilerplate <0 
+allow-newer: true 

@@ -36,22 +36,22 @@ chefTodoListMain = do
 
 handleChefReadModelEvents
   :: Map UUID [Maybe Food]
-  -> [GloballyOrderedEvent JSONString]
+  -> [GlobalStreamEvent JSONString]
   -> IO (Map UUID [Maybe Food])
-handleChefReadModelEvents foodMap (map globallyOrderedEventToStoredEvent -> events) = do
+handleChefReadModelEvents foodMap (map streamEventEvent -> events) = do
   let
-    tabEvents = mapMaybe (traverse $ deserialize jsonStringSerializer) events :: [StoredEvent TabEvent]
+    tabEvents = mapMaybe (traverse $ deserialize jsonStringSerializer) events :: [VersionedStreamEvent TabEvent]
     foodMap' = foldl' handleEventToMap foodMap $ tabEvents
   unless (null events) $ printFood foodMap'
   return foodMap'
 
-handleEventToMap :: Map UUID [Maybe Food] -> StoredEvent TabEvent -> Map UUID [Maybe Food]
-handleEventToMap foodMap (StoredEvent uuid _ (TabClosed _)) = Map.delete uuid foodMap
-handleEventToMap foodMap storedEvent =
+handleEventToMap :: Map UUID [Maybe Food] -> VersionedStreamEvent TabEvent -> Map UUID [Maybe Food]
+handleEventToMap foodMap (StreamEvent uuid _ (TabClosed _)) = Map.delete uuid foodMap
+handleEventToMap foodMap streamEvent =
   let
-    uuid = storedEventProjectionId storedEvent
+    uuid = streamEventKey streamEvent
     oldList = Map.findWithDefault [] uuid foodMap
-  in Map.insert uuid (handleEventToFood oldList $ storedEventEvent storedEvent) foodMap
+  in Map.insert uuid (handleEventToFood oldList $ streamEventEvent streamEvent) foodMap
 
 handleEventToFood :: [Maybe Food] -> TabEvent -> [Maybe Food]
 handleEventToFood oldFood (FoodOrdered newFood) = oldFood ++ map Just newFood

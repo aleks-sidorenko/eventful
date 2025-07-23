@@ -46,19 +46,19 @@ runCLICommand ListMenu = liftIO $ do
   mapM_ printPair (zip [0 :: Int ..] $ map unDrink allDrinks)
 runCLICommand (ViewTab tabId) = do
   uuid <- fromJustNote "Could not find tab with given id" <$> runDB (getTabUuid tabId)
-  latest <- runDB $ getLatestVersionedProjection cliEventStore (serializedProjection tabProjection jsonStringSerializer) uuid
-  liftIO $ printJSONPretty latest
+  StreamProjection{..} <- runDB $ getLatestStreamProjection cliEventStoreReader (versionedStreamProjection uuid (serializedProjection tabProjection jsonStringSerializer))
+  liftIO $ printJSONPretty streamProjectionState
 runCLICommand (TabCommand tabId command) = do
   uuid <- fromJustNote "Could not find tab with given id" <$> runDB (getTabUuid tabId)
-  result <- runDB $ applyCommandHandler cliEventStore
+  result <- runDB $ applyCommandHandler cliEventStore cliEventStoreReader
     (serializedCommandHandler tabCommandHandler jsonStringSerializer idSerializer) uuid command
   case result of
     [] -> liftIO . putStrLn $ "Error! "
     events -> do
       liftIO . putStrLn $ "Events: " ++ show events
-      latest <- runDB $ getLatestVersionedProjection cliEventStore (serializedProjection tabProjection jsonStringSerializer) uuid
+      StreamProjection{..} <- runDB $ getLatestStreamProjection cliEventStoreReader (versionedStreamProjection uuid (serializedProjection tabProjection jsonStringSerializer))
       liftIO . putStrLn $ "Latest state:"
-      liftIO $ printJSONPretty latest
+      liftIO $ printJSONPretty streamProjectionState
 
 printJSONPretty :: (ToJSON a) => a -> IO ()
 printJSONPretty = BSL.putStrLn . encodePretty' (defConfig { confIndent = Spaces 2 })

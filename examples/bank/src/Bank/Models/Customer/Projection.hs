@@ -8,7 +8,7 @@ module Bank.Models.Customer.Projection
   ) where
 
 import Data.Aeson.TH
-import SumTypes.TH
+import SumTypesX.TH
 
 import Eventful
 

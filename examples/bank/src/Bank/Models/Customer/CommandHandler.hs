@@ -5,7 +5,7 @@ module Bank.Models.Customer.CommandHandler
   , customerCommandHandler
   ) where
 
-import SumTypes.TH
+import SumTypesX.TH
 
 import Eventful
 

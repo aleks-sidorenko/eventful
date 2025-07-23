@@ -22,7 +22,7 @@ dependencies:
   - contravariant
   - http-api-data
   - path-pieces
-  # - sum-type-boilerplate  # Disabled: not compatible with GHC 9.6
+  - x-sum-type-boilerplate
   - template-haskell
   - text
   - transformers

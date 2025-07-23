@@ -2,6 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Eventful.Store.Sql.Operations
   ( SqlEventStoreConfig (..)
@@ -14,13 +15,14 @@ module Eventful.Store.Sql.Operations
   , unsafeSqlStoreGlobalStreamEvents
   ) where
 
-import Control.Monad.Reader
+import Control.Monad.IO.Class
 import Data.Foldable (for_)
-import Data.Maybe (listToMaybe, maybe)
-import Data.Monoid ((<>))
+import Data.Maybe (listToMaybe)
 import Data.Text (Text)
 import Database.Persist
 import Database.Persist.Sql
+import Database.Persist.Names (FieldNameDB(..), EntityNameDB(..))
+import Database.Persist.Class (SafeToInsert)
 
 import Eventful.Store.Class
 import Eventful.UUID
@@ -81,8 +83,8 @@ sqlGetProjectionIds
 sqlGetProjectionIds SqlEventStoreConfig{..} =
   fmap unSingle <$> rawSql ("SELECT DISTINCT " <> uuidFieldName <> " FROM " <> tableName) []
   where
-    (DBName tableName) = tableDBName (sqlEventStoreConfigSequenceMakeEntity nil 0 undefined)
-    (DBName uuidFieldName) = fieldDBName sqlEventStoreConfigSequenceNumberField
+    tableName = unEntityNameDB $ tableDBName (sqlEventStoreConfigSequenceMakeEntity nil 0 undefined)
+    uuidFieldName = unFieldNameDB $ fieldDBName sqlEventStoreConfigSequenceNumberField
 
 sqlGetStreamEvents
   :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend)
@@ -129,22 +131,22 @@ sqlGetAllEventsInRange config@SqlEventStoreConfig{..} QueryRange{..} = do
 sqlMaxEventVersion
   :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend)
   => SqlEventStoreConfig entity serialized
-  -> (DBName -> DBName -> DBName -> Text)
+  -> (FieldNameDB -> FieldNameDB -> FieldNameDB -> Text)
   -> UUID
   -> SqlPersistT m EventVersion
 sqlMaxEventVersion SqlEventStoreConfig{..} maxVersionSql uuid =
   let
-    tableName = tableDBName (sqlEventStoreConfigSequenceMakeEntity nil 0 undefined)
+    tableName = FieldNameDB $ unEntityNameDB $ tableDBName (sqlEventStoreConfigSequenceMakeEntity nil 0 undefined)
     uuidFieldName = fieldDBName sqlEventStoreConfigUUIDField
     versionFieldName = fieldDBName sqlEventStoreConfigVersionField
     rawVals = rawSql (maxVersionSql tableName uuidFieldName versionFieldName) [toPersistValue uuid]
   in maybe 0 unSingle . listToMaybe <$> rawVals
 
 sqlStoreEvents
-  :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend)
+  :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend, SafeToInsert entity)
   => SqlEventStoreConfig entity serialized
   -> Maybe (Text -> Text)
-  -> (DBName -> DBName -> DBName -> Text)
+  -> (FieldNameDB -> FieldNameDB -> FieldNameDB -> Text)
   -> UUID
   -> [serialized]
   -> SqlPersistT m EventVersion
@@ -154,10 +156,10 @@ sqlStoreEvents config@SqlEventStoreConfig{..} mLockCommand maxVersionSql uuid ev
   -- NB: We need to take a lock on the events table or else the global sequence
   -- numbers may not increase monotonically over time.
   for_ mLockCommand $ \lockCommand -> rawExecute (lockCommand tableName) []
-  insertMany_ entities
+  _ <- insertMany entities
   return $ versionNum + (EventVersion $ length events)
   where
-    (DBName tableName) = tableDBName (sqlEventStoreConfigSequenceMakeEntity nil 0 undefined)
+    tableName = unEntityNameDB $ tableDBName (sqlEventStoreConfigSequenceMakeEntity nil 0 undefined)
 
 -- | Useful if you have some 'GlobalStreamEvent's and you want to shove them in
 -- a SQL event store. This can happen when you are moving events between event

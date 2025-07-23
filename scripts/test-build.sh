@@ -14,17 +14,17 @@ nix develop --command bash << 'EOF'
   find . -name "package.yaml" -exec hpack {} \;
   echo ""
   
-  echo "🔨 Building core packages..."
-  cabal build eventful-core eventful-memory eventful-test-helpers
+  echo "🔨 Building all packages..."
+  cabal build all
   echo ""
   
   echo "🧪 Running tests..."
-  echo "Testing eventful-core:"
-  cabal test eventful-core
+  echo "Testing core packages:"
+  cabal test eventful-core eventful-memory eventful-test-helpers
   echo ""
   
-  echo "Testing eventful-memory:"  
-  cabal test eventful-memory
+  echo "Testing examples:"  
+  cabal test examples-bank
   echo ""
   
   echo "✅ Build and test complete!"
@@ -34,5 +34,8 @@ echo "📋 Summary of fixes applied:"
 echo "- ✅ Added hspec-discover to build-tools in test configurations"
 echo "- ✅ Added hspec-discover to Nix environment (flake.nix and shell.nix)"
 echo "- ✅ Fixed duplicate maintainer fields in package.yaml files"
-echo "- ✅ Disabled incompatible sum-type-boilerplate dependency"
-echo "- ✅ Stubbed out Template Haskell functions for GHC 9.6 compatibility" 
+echo "- ✅ Replaced sum-type-boilerplate with x-sum-type-boilerplate (GHC 9.6 compatible)"
+echo "- ✅ Restored Template Haskell functions with modern package"
+echo "- ✅ Updated SQL backends to use modern persistent API (FieldNameDB/EntityNameDB)"
+echo "- ✅ Fixed Template Haskell API compatibility for GHC 9.6"
+echo "- ✅ Added SafeToInsert constraints for modern persistent insertion safety" 
