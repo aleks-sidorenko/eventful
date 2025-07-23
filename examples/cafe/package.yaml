@@ -1,17 +1,16 @@
 name: examples-cafe
 version: "0.1.0"
-maintainer: David Reaver, Alexander Sidorenko
-synopsis: Example cafe application for eventful
-description: Example cafe application for eventful
-maintainer: David Reaver, Alexander Sidorenko
+maintainer: Alexander Sidorenko
+synopsis: Example cafe application for eventium
+description: Example cafe application for eventium
 stability: experimental
 license: MIT
 
 dependencies:
   - base >= 4.9 && < 5
-  - eventful-core
-  - eventful-memory
-  - eventful-sqlite
+  - eventium-core
+  - eventium-memory
+  - eventium-sqlite
 
   - aeson
   - aeson-casing

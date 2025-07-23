@@ -18,8 +18,8 @@ module Bank.Models
 import Data.Aeson.TH
 import SumTypesX.TH
 
-import Eventful
-import Eventful.TH
+import Eventium
+import Eventium.TH
 
 import Bank.Json
 import Bank.Models.Account as X

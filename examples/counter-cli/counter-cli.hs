@@ -9,8 +9,8 @@ import Control.Concurrent.STM
 import Control.Monad (forever, void)
 import Safe (readMay)
 
-import Eventful
-import Eventful.Store.Memory
+import Eventium
+import Eventium.Store.Memory
 
 main :: IO ()
 main = do

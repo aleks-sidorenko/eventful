@@ -1,4 +1,4 @@
-# Eventful
+# Eventium
 
 A library for building event sourcing systems in Haskell.
 
@@ -16,7 +16,7 @@ nix develop
 cabal build all
 
 # Run tests
-cabal test eventful-core eventful-memory
+cabal test eventium-core eventium-memory
 ```
 
 ### Automated Build & Test
@@ -50,9 +50,9 @@ This script will:
 ## Project Status
 
 ✅ **Working packages**:
-- eventful-core - Core event sourcing library (with Template Haskell support)
-- eventful-memory - In-memory implementations
-- eventful-test-helpers - Testing utilities
+- eventium-core - Core event sourcing library (with Template Haskell support)
+- eventium-memory - In-memory implementations
+- eventium-test-helpers - Testing utilities
 
 ⚠️ **Temporarily disabled** (due to dependency compatibility):
 - SQL backends (postgresql, sqlite)
