@@ -4,8 +4,7 @@ packages:
   eventium-postgresql
   eventium-sql-common
   eventium-sqlite
-  eventium-test-helpers
-  -- eventium-dynamodb  -- disabled for now due to outdated AWS dependencies
+  eventium-test-helpers  
   examples/cafe
   examples/bank
   examples/counter-cli

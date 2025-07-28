@@ -25,7 +25,6 @@ Eventium provides a complete event sourcing toolkit with the following modules:
 - **`eventium-memory`** - In-memory event store for development and testing
 - **`eventium-postgresql`** - PostgreSQL-based persistent event store
 - **`eventium-sqlite`** - SQLite-based persistent event store
-- **`eventium-dynamodb`** - AWS DynamoDB event store implementation
 - **`eventium-sql-common`** - Shared utilities for SQL-based stores
 
 ## Build System

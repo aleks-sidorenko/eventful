@@ -21,11 +21,8 @@
           "eventium-postgresql"
           "eventium-sql-common"
           "eventium-sqlite"
-          "eventium-test-helpers"
-          "eventium-dynamodb"
-          "doc/tutorial"
-          "examples/bank"
-          "examples/cafe"
+          "eventium-test-helpers"          
+          "examples/bank"          
           "examples/counter-cli"
         ];
 
