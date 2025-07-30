@@ -1,0 +1,45 @@
+name: eventium-postgresql
+version: "0.1.0"
+maintainer: Alexander Sidorenko
+synopsis: Postgres implementations for eventium
+description: Postgres implementations for eventium
+stability: experimental
+category: Database,Eventsourcing,PostgreSQL
+license: MIT
+license-file: LICENSE.md
+
+github: aleks-sidorenko/eventium
+
+extra-source-files:
+  - CHANGELOG.md
+  - README.md
+
+dependencies:
+  - base >= 4.9 && < 5
+  - eventium-core
+  - eventium-sql-common
+
+  - aeson
+  - bytestring
+  - mtl
+  - persistent
+  - text
+
+library:
+  source-dirs:
+    - src
+  ghc-options: -Wall
+
+tests:
+  spec:
+    main: Spec.hs
+    ghc-options: -Wall
+    source-dirs:
+      - tests
+      - src
+    dependencies:
+      - hspec
+      - HUnit
+      - eventium-test-helpers
+      - persistent-postgresql
+      - utf8-string

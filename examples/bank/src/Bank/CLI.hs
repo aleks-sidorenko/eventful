@@ -8,7 +8,7 @@ import Control.Monad.Logger (NoLoggingT (..), runNoLoggingT)
 import Data.Text (pack)
 import Database.Persist.Sqlite
 
-import Eventful.Store.Sqlite
+import Eventium.Store.Sqlite
 
 import Bank.CLI.Options
 import Bank.CLI.RunCommand

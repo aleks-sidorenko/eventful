@@ -10,7 +10,7 @@ module Bank.Models.Customer.Projection
 import Data.Aeson.TH
 import SumTypesX.TH
 
-import Eventful
+import Eventium
 
 import Bank.Models.Customer.Events
 import Bank.Json

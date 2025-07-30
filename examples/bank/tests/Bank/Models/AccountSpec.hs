@@ -1,7 +1,7 @@
 module Bank.Models.AccountSpec (spec) where
 
 import Test.Hspec
-import Eventful
+import Eventium
 
 import Bank.Models.Account
 

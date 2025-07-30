@@ -9,12 +9,12 @@ This document records the migration from the original `sum-type-boilerplate` pac
 - **Added**: `x-sum-type-boilerplate` (maintained fork with GHC 9.6 support)
 
 ### 2. **Files Updated**
-- `eventful-core/package.yaml` - Updated dependency
+- `eventium-core/package.yaml` - Updated dependency
 - `examples/bank/package.yaml` - Updated dependency
 
 ### 3. **Code Restoration**
-- `eventful-core/src/Eventful/TH/SumTypeSerializer.hs` - Restored imports and functions
-- `eventful-core/src/Eventful/TH/Projection.hs` - Restored imports and functions
+- `eventium-core/src/Eventium/TH/SumTypeSerializer.hs` - Restored imports and functions
+- `eventium-core/src/Eventium/TH/Projection.hs` - Restored imports and functions
 
 ## 🎯 **What This Enables**
 
@@ -55,11 +55,11 @@ The Template Haskell code generation can be tested by:
 
 # Or manually:
 nix develop
-cabal build eventful-core examples/bank
+cabal build eventium-core examples/bank
 ```
 
 ## 📚 **References**
 
 - [x-sum-type-boilerplate on Hackage](https://hackage.haskell.org/package/x-sum-type-boilerplate)
-- [Original sum-type-boilerplate](https://github.com/jdreaver/sum-type-boilerplate) (archived)
+- [Original sum-type-boilerplate](https://github.com/aleks-sidorenko/sum-type-boilerplate) (archived)
 - [GHC 9.6 Template Haskell changes](https://downloads.haskell.org/ghc/9.6.1/docs/users_guide/9.6.1-notes.html) 

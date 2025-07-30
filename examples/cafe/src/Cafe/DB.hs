@@ -26,8 +26,8 @@ import Database.Persist
 import Database.Persist.Sql
 import Database.Persist.TH
 
-import Eventful
-import Eventful.Store.Sqlite  ()
+import Eventium
+import Eventium.Store.Sqlite  ()
 
 share [mkPersist sqlSettings, mkMigrate "migrateTabEntity"] [persistLowerCase|
 TabEntity sql=tabs

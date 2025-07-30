@@ -1,0 +1,27 @@
+name: eventium-test-helpers
+version: "0.1.0"
+maintainer: Alexander Sidorenko
+synopsis: Common module used for eventium tests
+description: Common module used for eventium tests
+stability: experimental
+category: Database,Eventsourcing
+license: MIT
+license-file: LICENSE.md
+
+github: aleks-sidorenko/eventium
+
+dependencies:
+  - base >= 4.9 && < 5
+  - eventium-core
+
+  - aeson
+  - aeson-casing
+  - extra
+  - hspec
+  - monad-logger
+  - text
+
+library:
+  source-dirs:
+    - src
+  ghc-options: -Wall

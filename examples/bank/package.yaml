@@ -1,15 +1,15 @@
 name: examples-bank
 version: "0.1.0"
-maintainer: David Reaver, Alexander Sidorenko
-synopsis: Example bank application for eventful
-description: Example bank application for eventful
+maintainer: Alexander Sidorenko
+synopsis: Example bank application for eventium
+description: Example bank application for eventium
 stability: experimental
 license: MIT
 
 dependencies:
   - base >= 4.9 && < 5
-  - eventful-core
-  - eventful-sqlite
+  - eventium-core
+  - eventium-sqlite
 
   - aeson
   - aeson-pretty

@@ -1,0 +1,28 @@
+name: eventium-sql-common
+version: "0.1.0"
+maintainer: Alexander Sidorenko
+synopsis: Common library for SQL event stores
+description: Common library for SQL event stores
+stability: experimental
+category: Database,Eventsourcing
+license: MIT
+license-file: LICENSE.md
+
+github: aleks-sidorenko/eventium
+
+dependencies:
+  - base >= 4.9 && < 5
+  - eventium-core
+
+  - aeson
+  - bytestring
+  - mtl
+  - persistent
+  - persistent-template
+  - text
+  - uuid
+
+library:
+  source-dirs:
+    - src
+  ghc-options: -Wall

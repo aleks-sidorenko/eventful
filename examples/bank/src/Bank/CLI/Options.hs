@@ -9,12 +9,12 @@ import Data.Monoid ((<>))
 import qualified Data.Text as T
 import Options.Applicative
 
-import Eventful
+import Eventium
 
 import Bank.Models
 
 runOptionsParser :: IO Options
-runOptionsParser = execParser $ info (helper <*> parseOptions) (fullDesc <> progDesc "eventful bank CLI")
+runOptionsParser = execParser $ info (helper <*> parseOptions) (fullDesc <> progDesc "eventium bank CLI")
 
 data Options
   = Options

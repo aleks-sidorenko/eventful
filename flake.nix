@@ -16,16 +16,13 @@
         
         # Define all the local packages
         localPackages = [
-          "eventful-core"
-          "eventful-memory"
-          "eventful-postgresql"
-          "eventful-sql-common"
-          "eventful-sqlite"
-          "eventful-test-helpers"
-          "eventful-dynamodb"
-          "doc/tutorial"
-          "examples/bank"
-          "examples/cafe"
+          "eventium-core"
+          "eventium-memory"
+          "eventium-postgresql"
+          "eventium-sql-common"
+          "eventium-sqlite"
+          "eventium-test-helpers"          
+          "examples/bank"          
           "examples/counter-cli"
         ];
 
@@ -66,11 +63,11 @@
       in {
         # Export all packages
         packages = packages // {
-          default = packages.eventful-core;
+          default = packages.eventium-core;
           
           # Combined package that builds everything
           all = hPkgs.buildStackProject {
-            name = "eventful-all";
+            name = "eventium-all";
             src = ./.;
             ghc = hPkgs.ghc;
             buildInputs = with pkgs; [ 
@@ -120,7 +117,7 @@
         # Apps for easy running
         apps = {
           default = flake-utils.lib.mkApp {
-            drv = packages.eventful-core;
+            drv = packages.eventium-core;
           };
           
           # Example apps
