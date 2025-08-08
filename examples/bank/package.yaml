@@ -53,3 +53,5 @@ tests:
     dependencies:
       - hspec
       - HUnit
+    build-tools:
+      - hspec-discover
