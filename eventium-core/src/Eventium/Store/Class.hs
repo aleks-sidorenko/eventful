@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveFoldable #-}
-{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RankNTypes #-}
@@ -34,6 +32,7 @@ module Eventium.Store.Class
 
 import Data.Aeson
 import Data.Functor.Contravariant
+import Data.Functor ((<&>))
 import Data.Maybe (mapMaybe)
 import Web.HttpApiData
 import Web.PathPieces
@@ -89,7 +88,7 @@ data ExpectedPosition position
     -- ^ Used to assert the stream is at a particular position.
   deriving (Show, Eq)
 
-data EventWriteError position
+newtype EventWriteError position
   = EventStreamNotAtExpectedVersion position
   deriving (Show, Eq)
 
@@ -116,11 +115,11 @@ transactionalExpectedWriteHelper'
   -> (key -> [event] -> m EventVersion)
   -> key -> [event] -> m (Either (EventWriteError position) EventVersion)
 transactionalExpectedWriteHelper' Nothing _ storeEvents' uuid events =
-  storeEvents' uuid events >>= return . Right
+  storeEvents' uuid events <&> Right
 transactionalExpectedWriteHelper' (Just f) getLatestVersion' storeEvents' uuid events = do
   latestVersion <- getLatestVersion' uuid
   if f latestVersion
-  then storeEvents' uuid events >>= return . Right
+  then storeEvents' uuid events <&> Right
   else return $ Left $ EventStreamNotAtExpectedVersion latestVersion
 
 -- | Changes the monad an 'EventStoreReader' runs in. This is useful to run
