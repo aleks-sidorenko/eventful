@@ -32,7 +32,7 @@ import Eventium.Store.Sql.Orphans ()
 
 share [mkPersist sqlSettings, mkMigrate "migrateSqlEvent"] [persistLowerCase|
 SqlEvent sql=events
-    Id SequenceNumber sql=sequence_number default=0 autoincrement
+    Id SequenceNumber sql=sequence_number autoincrement
     uuid UUID
     version EventVersion
     event JSONString

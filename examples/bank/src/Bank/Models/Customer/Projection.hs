@@ -15,7 +15,7 @@ import Eventium
 import Bank.Models.Customer.Events
 import Bank.Json
 
-data Customer =
+newtype Customer =
   Customer
   { customerName :: Maybe String
   } deriving (Show, Eq)
