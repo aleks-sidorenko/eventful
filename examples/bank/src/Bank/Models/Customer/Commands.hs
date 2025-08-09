@@ -14,7 +14,7 @@ customerCommands =
   [ ''CreateCustomer
   ]
 
-data CreateCustomer =
+newtype CreateCustomer =
   CreateCustomer
   { createCustomerData :: String
   } deriving (Show, Eq)

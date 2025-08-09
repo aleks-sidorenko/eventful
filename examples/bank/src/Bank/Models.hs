@@ -26,10 +26,7 @@ import Bank.Models.Account as X
 import Bank.Models.Customer as X
 
 constructSumType "BankEvent" (defaultSumTypeOptions { sumTypeOptionsTagOptions = ConstructTagName (++ "Event") }) $
-  concat
-  [ accountEvents
-  , customerEvents
-  ]
+  accountEvents ++ customerEvents
 
 deriving instance Show BankEvent
 deriving instance Eq BankEvent
@@ -37,10 +34,7 @@ deriving instance Eq BankEvent
 deriveJSON (defaultOptions { constructorTagModifier = dropSuffix "Event" }) ''BankEvent
 
 constructSumType "BankCommand" (defaultSumTypeOptions { sumTypeOptionsTagOptions = ConstructTagName (++ "Command") }) $
-  concat
-  [ accountCommands
-  , customerCommands
-  ]
+  accountCommands ++ customerCommands
 
 deriving instance Show BankCommand
 deriving instance Eq BankCommand

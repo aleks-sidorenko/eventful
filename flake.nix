@@ -22,7 +22,8 @@
           "eventium-sql-common"
           "eventium-sqlite"
           "eventium-test-helpers"          
-          "examples/bank"          
+          "examples/bank"
+          "examples/cafe"
           "examples/counter-cli"
         ];
 
@@ -48,12 +49,12 @@
           postgresql
           sqlite
           
-              # Development tools
-    hPkgs.haskell-language-server
-    hPkgs.hlint
-    hPkgs.ormolu
-    hPkgs.ghcid
-    hPkgs.hspec-discover
+          # Development tools
+          hPkgs.haskell-language-server
+          hPkgs.hlint
+          hPkgs.ormolu
+          hPkgs.ghcid
+          hPkgs.hspec-discover
           
           # System dependencies
           pkg-config
@@ -104,6 +105,17 @@
               (cd "$dir" && hpack)
             done
             echo "✅ Cabal files generated"
+
+            # Optionally start a local PostgreSQL if running inside a container/CI
+            if [ "${IN_CONTAINER:-}" = "1" ]; then
+              export POSTGRES_HOST=${POSTGRES_HOST:-127.0.0.1}
+              export POSTGRES_PORT=${POSTGRES_PORT:-5432}
+              export POSTGRES_USER=${POSTGRES_USER:-postgres}
+              export POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+              export POSTGRES_DBNAME=${POSTGRES_DBNAME:-eventium_test}
+              echo "Ensuring local PostgreSQL is running (IN_CONTAINER=1)..."
+              bash scripts/start-local-postgres.sh || true
+            fi
           '';
 
           # Environment variables

@@ -38,7 +38,7 @@ data AccountOpened =
   , accountOpenedInitialFunding :: Double
   } deriving (Show, Eq)
 
-data AccountOpenRejected
+newtype AccountOpenRejected
   = AccountOpenRejected
   { accountOpenRejectedReason :: String
   } deriving (Show, Eq)
@@ -55,7 +55,7 @@ data AccountDebited =
   , accountDebitedReason :: String
   } deriving (Show, Eq)
 
-data AccountDebitRejected
+newtype AccountDebitRejected
   = AccountDebitRejected
   { accountDebitRejectedRemainingBalance :: Double
   } deriving (Show, Eq)
@@ -67,7 +67,7 @@ data AccountTransferStarted =
   , accountTransferStartedTargetAccount :: UUID
   } deriving (Show, Eq)
 
-data AccountTransferCompleted =
+newtype AccountTransferCompleted =
   AccountTransferCompleted
   { accountTransferCompletedTransferId :: UUID
   } deriving (Show, Eq)

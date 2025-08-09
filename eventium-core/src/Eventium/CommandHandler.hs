@@ -34,8 +34,8 @@ allCommandHandlerStates
   :: CommandHandler state event command
   -> [command]
   -> [state]
-allCommandHandlerStates (CommandHandler commandHandler (Projection seed eventHandler)) events =
-  scanl' go seed events
+allCommandHandlerStates (CommandHandler commandHandler (Projection seed eventHandler)) =
+  scanl' go seed
   where
     go state command = foldl' eventHandler state $ commandHandler state command
 

@@ -43,3 +43,5 @@ tests:
       - HUnit
       - eventium-test-helpers
       - persistent-sqlite
+    build-tools:
+      - hspec-discover

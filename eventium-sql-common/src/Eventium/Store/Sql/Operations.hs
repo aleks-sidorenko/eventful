@@ -157,7 +157,7 @@ sqlStoreEvents config@SqlEventStoreConfig{..} mLockCommand maxVersionSql uuid ev
   -- numbers may not increase monotonically over time.
   for_ mLockCommand $ \lockCommand -> rawExecute (lockCommand tableName) []
   _ <- insertMany entities
-  return $ versionNum + (EventVersion $ length events)
+  return $ versionNum + EventVersion (length events)
   where
     tableName = unEntityNameDB $ tableDBName (sqlEventStoreConfigSequenceMakeEntity nil 0 undefined)
 

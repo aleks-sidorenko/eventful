@@ -81,7 +81,7 @@ stateGlobalEventStoreReader = embeddedStateGlobalEventStoreReader id
 stateEventStoreWriter
   :: (MonadState (EventMap event) m)
   => VersionedEventStoreWriter m event
-stateEventStoreWriter = embeddedStateEventStoreWriter id (flip const)
+stateEventStoreWriter = embeddedStateEventStoreWriter id (const id)
 
 -- | An 'EventStore' that runs on some 'MonadState' that contains an
 -- 'EventMap'. This is useful if you want to include other state in your
@@ -161,4 +161,4 @@ storeEventMap store@(EventMap uuidMap globalEvents) uuid events =
     streamEvents = zipWith (StreamEvent uuid) [versStart + 1..] events
     newMap = Map.insertWith (flip (><)) uuid (Seq.fromList streamEvents) uuidMap
     globalEvents' = globalEvents >< Seq.fromList streamEvents
-  in (EventMap newMap globalEvents', versStart + (EventVersion $ length events))
+  in (EventMap newMap globalEvents', versStart + EventVersion (length events))

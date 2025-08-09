@@ -50,11 +50,10 @@ handleAccountEvent manager (StreamEvent sourceAccount _ (AccountTransferStartedE
     { transferSourceAccount = sourceAccount
     , transferTargetAccount = accountTransferStartedTargetAccount
     }
-  & transferManagerPendingCommands .~ (
-      if isNothing (manager ^. transferManagerData . at accountTransferStartedTransferId)
-      then [ProcessManagerCommand accountTransferStartedTargetAccount accountBankCommandHandler command]
-      else []
-    )
+  & transferManagerPendingCommands .~
+      [ ProcessManagerCommand accountTransferStartedTargetAccount accountBankCommandHandler command
+      | isNothing (manager ^. transferManagerData . at accountTransferStartedTransferId)
+      ]
   & transferManagerPendingEvents .~ []
   where
     command =

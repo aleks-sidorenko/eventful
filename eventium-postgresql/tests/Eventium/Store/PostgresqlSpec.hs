@@ -27,12 +27,12 @@ makeStore
        , ConnectionPool)
 makeStore = do
   let
-    makeConnString host port user pass db = (
+    makeConnString host port user pass db =
           "host=" <> host
       <> " port=" <> port
       <> " user=" <> user
       <> " dbname=" <> db
-      <> " password=" <> pass)
+      <> " password=" <> pass
     writer = serializedEventStoreWriter jsonStringSerializer $
         postgresqlEventStoreWriter defaultSqlEventStoreConfig
     reader = serializedVersionedEventStoreReader jsonStringSerializer $

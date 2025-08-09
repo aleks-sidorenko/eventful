@@ -41,7 +41,7 @@ handleChefReadModelEvents
 handleChefReadModelEvents foodMap (map streamEventEvent -> events) = do
   let
     tabEvents = mapMaybe (traverse $ deserialize jsonStringSerializer) events :: [VersionedStreamEvent TabEvent]
-    foodMap' = foldl' handleEventToMap foodMap $ tabEvents
+    foodMap' = foldl' handleEventToMap foodMap tabEvents
   unless (null events) $ printFood foodMap'
   return foodMap'
 

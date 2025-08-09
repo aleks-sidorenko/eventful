@@ -43,3 +43,5 @@ tests:
       - eventium-test-helpers
       - persistent-postgresql
       - utf8-string
+    build-tools:
+      - hspec-discover
