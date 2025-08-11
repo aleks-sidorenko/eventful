@@ -2,20 +2,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Eventium.Store.Sql.JSONString
-  ( JSONString
-  , jsonStringSerializer
-  ) where
+  ( JSONString,
+    jsonStringSerializer,
+  )
+where
 
 import Data.Aeson
 import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy.Encoding as TLE
 import Database.Persist
 import Database.Persist.Sql
-
 import Eventium.Serializer
 
 -- | A more specific type than just ByteString for JSON data.
-newtype JSONString = JSONString { unJSONString :: Text }
+newtype JSONString = JSONString {unJSONString :: Text}
   deriving (Eq, PersistField)
 
 instance PersistFieldSql JSONString where
@@ -27,9 +27,9 @@ instance Show JSONString where
 jsonStringSerializer :: (ToJSON a, FromJSON a) => Serializer a JSONString
 jsonStringSerializer =
   Serializer
-  encodeJSON
-  decodeJSON
-  decodeJSONEither
+    encodeJSON
+    decodeJSON
+    decodeJSONEither
 
 encodeJSON :: (ToJSON a) => a -> JSONString
 encodeJSON = JSONString . TLE.decodeUtf8 . encode

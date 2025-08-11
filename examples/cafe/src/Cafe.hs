@@ -1,7 +1,8 @@
 module Cafe
-  ( cliMain
-  , chefTodoListMain
-  ) where
+  ( cliMain,
+    chefTodoListMain,
+  )
+where
 
-import Cafe.ChefTodoList
 import Cafe.CLI
+import Cafe.ChefTodoList

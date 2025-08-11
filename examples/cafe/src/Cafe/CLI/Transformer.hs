@@ -1,15 +1,15 @@
 module Cafe.CLI.Transformer
-  ( CLI
-  , runCLI
-  , runDB
-  , cliEventStore
-  , cliEventStoreReader
-  , cliGloballyOrderedEventStore
-  ) where
+  ( CLI,
+    runCLI,
+    runDB,
+    cliEventStore,
+    cliEventStoreReader,
+    cliGloballyOrderedEventStore,
+  )
+where
 
 import Control.Monad.Reader
 import Database.Persist.Sql
-
 import Eventium
 import Eventium.Store.Sqlite
 

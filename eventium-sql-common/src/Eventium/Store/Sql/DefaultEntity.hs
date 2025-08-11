@@ -13,26 +13,26 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 -- | Definition for a default Entity to use with a SQL event store.
-
 module Eventium.Store.Sql.DefaultEntity
-  ( SqlEvent (..)
-  , SqlEventId
-  , migrateSqlEvent
-  , defaultSqlEventStoreConfig
-  ) where
+  ( SqlEvent (..),
+    SqlEventId,
+    migrateSqlEvent,
+    defaultSqlEventStoreConfig,
+  )
+where
 
-import Database.Persist.TH
 import Database.Persist (Key)
-import Database.Persist.Sql (toSqlKey, fromSqlKey)
-
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
+import Database.Persist.TH
 import Eventium.Store.Class
+import Eventium.Store.Sql.JSONString
+import Eventium.Store.Sql.Operations
+import Eventium.Store.Sql.Orphans ()
 import Eventium.UUID
 
-import Eventium.Store.Sql.Operations
-import Eventium.Store.Sql.JSONString
-import Eventium.Store.Sql.Orphans ()
-
-share [mkPersist sqlSettings, mkMigrate "migrateSqlEvent"] [persistLowerCase|
+share
+  [mkPersist sqlSettings, mkMigrate "migrateSqlEvent"]
+  [persistLowerCase|
 SqlEvent sql=events
     uuid UUID
     version EventVersion
@@ -52,13 +52,13 @@ sqlEventUnKey key =
 defaultSqlEventStoreConfig :: SqlEventStoreConfig SqlEvent JSONString
 defaultSqlEventStoreConfig =
   SqlEventStoreConfig
-  SqlEvent
-  sqlEventMakeKey
-  sqlEventUnKey
-  sqlEventUuid
-  sqlEventVersion
-  sqlEventEvent
-  SqlEventId
-  SqlEventUuid
-  SqlEventVersion
-  SqlEventEvent
+    SqlEvent
+    sqlEventMakeKey
+    sqlEventUnKey
+    sqlEventUuid
+    sqlEventVersion
+    sqlEventEvent
+    SqlEventId
+    SqlEventUuid
+    SqlEventVersion
+    SqlEventEvent

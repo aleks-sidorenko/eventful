@@ -2,41 +2,42 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Bank.Models
-  ( BankEvent (..)
-  , BankCommand (..)
-  , accountEventSerializer
-  , accountCommandSerializer
-  , accountBankProjection
-  , accountBankCommandHandler
-  , customerEventSerializer
-  , customerCommandSerializer
-  , customerBankProjection
-  , customerBankCommandHandler
-  , module X
-  ) where
-
-import Data.Aeson.TH
-import SumTypesX.TH
-
-import Eventium
-import Eventium.TH
+  ( BankEvent (..),
+    BankCommand (..),
+    accountEventSerializer,
+    accountCommandSerializer,
+    accountBankProjection,
+    accountBankCommandHandler,
+    customerEventSerializer,
+    customerCommandSerializer,
+    customerBankProjection,
+    customerBankCommandHandler,
+    module X,
+  )
+where
 
 import Bank.Json
 import Bank.Models.Account as X
 import Bank.Models.Customer as X
+import Data.Aeson.TH
+import Eventium
+import Eventium.TH
+import SumTypesX.TH
 
-constructSumType "BankEvent" (defaultSumTypeOptions { sumTypeOptionsTagOptions = ConstructTagName (++ "Event") }) $
+constructSumType "BankEvent" (defaultSumTypeOptions {sumTypeOptionsTagOptions = ConstructTagName (++ "Event")}) $
   accountEvents ++ customerEvents
 
 deriving instance Show BankEvent
+
 deriving instance Eq BankEvent
 
-deriveJSON (defaultOptions { constructorTagModifier = dropSuffix "Event" }) ''BankEvent
+deriveJSON (defaultOptions {constructorTagModifier = dropSuffix "Event"}) ''BankEvent
 
-constructSumType "BankCommand" (defaultSumTypeOptions { sumTypeOptionsTagOptions = ConstructTagName (++ "Command") }) $
+constructSumType "BankCommand" (defaultSumTypeOptions {sumTypeOptionsTagOptions = ConstructTagName (++ "Command")}) $
   accountCommands ++ customerCommands
 
 deriving instance Show BankCommand
+
 deriving instance Eq BankCommand
 
 mkSumTypeSerializer "accountEventSerializer" ''AccountEvent ''BankEvent

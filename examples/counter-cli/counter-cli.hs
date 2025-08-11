@@ -2,23 +2,20 @@
 -- simple Counter Projection/CommandHandler that holds an integer between 0 and 100.
 -- The CLI asks the user for commands and applies them to an in-memory event
 -- store.
-
 module Main where
 
 import Control.Concurrent.STM
 import Control.Monad (forever, void)
-import Safe (readMay)
-
 import Eventium
 import Eventium.Store.Memory
+import Safe (readMay)
 
 main :: IO ()
 main = do
   -- Create the event store and run loop forever
   tvar <- eventMapTVar
-  let
-    writer = tvarEventStoreWriter tvar
-    reader = tvarEventStoreReader tvar
+  let writer = tvarEventStoreWriter tvar
+      reader = tvarEventStoreReader tvar
   forever (readAndHandleCommand writer reader)
 
 readAndHandleCommand :: VersionedEventStoreWriter STM CounterEvent -> VersionedEventStoreReader STM CounterEvent -> IO ()
@@ -28,8 +25,7 @@ readAndHandleCommand writer reader = do
 
   -- Get current state and print it out
   latestStreamProjection <- atomically $ getLatestStreamProjection reader (versionedStreamProjection uuid counterProjection)
-  let
-    currentState = streamProjectionState latestStreamProjection
+  let currentState = streamProjectionState latestStreamProjection
   putStrLn $ "Current state: " ++ show currentState
 
   -- Ask user for command
@@ -47,7 +43,7 @@ readAndHandleCommand writer reader = do
   putStrLn ""
 
 -- | This is the state for our Counter projection.
-newtype CounterState = CounterState { unCounterState :: Int }
+newtype CounterState = CounterState {unCounterState :: Int}
   deriving (Eq, Show)
 
 -- | This specifies the possible events we can use for our counter. In our
@@ -64,8 +60,8 @@ type CounterProjection = Projection CounterState CounterEvent
 counterProjection :: CounterProjection
 counterProjection =
   Projection
-  (CounterState 0)
-  handleCounterEvent
+    (CounterState 0)
+    handleCounterEvent
 
 handleCounterEvent :: CounterState -> CounterEvent -> CounterState
 handleCounterEvent (CounterState k) (CounterAmountAdded x) = CounterState (k + x)
@@ -79,17 +75,16 @@ data CounterCommand
   | ResetCounter
   deriving (Eq, Show, Read)
 
-
 -- | This function validates commands and produces either an error or an event.
 handlerCounterCommand :: CounterState -> CounterCommand -> [CounterEvent]
 handlerCounterCommand (CounterState k) (IncrementCounter n) =
   if k + n <= 100
-  then [CounterAmountAdded n]
-  else [CounterOutOfBounds (k + n)]
+    then [CounterAmountAdded n]
+    else [CounterOutOfBounds (k + n)]
 handlerCounterCommand (CounterState k) (DecrementCounter n) =
   if k - n >= 0
-  then [CounterAmountAdded (-n)]
-  else [CounterOutOfBounds (k - n)]
+    then [CounterAmountAdded (-n)]
+    else [CounterOutOfBounds (k - n)]
 handlerCounterCommand (CounterState k) ResetCounter = [CounterAmountAdded (-k)]
 
 -- | This ties all of the counter types into a CommandHandler.

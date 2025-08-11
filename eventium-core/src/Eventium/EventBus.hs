@@ -1,7 +1,8 @@
 module Eventium.EventBus
-  ( synchronousEventBusWrapper
-  , storeAndPublishEvents
-  ) where
+  ( synchronousEventBusWrapper,
+    storeAndPublishEvents,
+  )
+where
 
 import Eventium.Store.Class
 import Eventium.UUID
@@ -10,11 +11,11 @@ import Eventium.UUID
 -- after running 'storeEvents'. This is useful to quickly wire up event
 -- handlers in your application (like read models or process managers), and it
 -- is also useful for integration testing along with an in-memory event store.
-synchronousEventBusWrapper
-  :: (Monad m)
-  => VersionedEventStoreWriter m event
-  -> [VersionedEventStoreWriter m event -> UUID -> event -> m ()]
-  -> VersionedEventStoreWriter m event
+synchronousEventBusWrapper ::
+  (Monad m) =>
+  VersionedEventStoreWriter m event ->
+  [VersionedEventStoreWriter m event -> UUID -> event -> m ()] ->
+  VersionedEventStoreWriter m event
 synchronousEventBusWrapper writer handlers = wrappedStore
   where
     -- NB: We need to use recursive let bindings so we can put wrappedStore
@@ -24,14 +25,14 @@ synchronousEventBusWrapper writer handlers = wrappedStore
 
 -- | Stores events in the store and then publishes them to the event handlers.
 -- This is used in the 'synchronousEventBusWrapper'.
-storeAndPublishEvents
-  :: (Monad m)
-  => VersionedEventStoreWriter m event
-  -> [UUID -> event -> m ()]
-  -> UUID
-  -> ExpectedPosition EventVersion
-  -> [event]
-  -> m (Either (EventWriteError EventVersion) EventVersion)
+storeAndPublishEvents ::
+  (Monad m) =>
+  VersionedEventStoreWriter m event ->
+  [UUID -> event -> m ()] ->
+  UUID ->
+  ExpectedPosition EventVersion ->
+  [event] ->
+  m (Either (EventWriteError EventVersion) EventVersion)
 storeAndPublishEvents store handlers uuid expectedVersion events = do
   result <- storeEvents store uuid expectedVersion events
   case result of

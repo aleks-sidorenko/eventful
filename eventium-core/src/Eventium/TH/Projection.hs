@@ -2,14 +2,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Eventium.TH.Projection
-  ( mkProjection
-  ) where
+  ( mkProjection,
+  )
+where
 
 import Data.Char (toLower)
+import Eventium.Projection
 import Language.Haskell.TH
 import SumTypesX.TH
-
-import Eventium.Projection
 
 -- | Creates a 'Projection' for a given type and a list of events. The user of
 -- this function also needs to provide event handlers for each event. For
@@ -56,41 +56,37 @@ mkProjection stateName stateDefault events = do
 
   -- Make function to handle events from sum type to handlers.
   let handleFuncName = mkName $ "handle" ++ eventTypeName
-  handleFuncType <- [t| $(conT stateName) -> $(conT $ mkName eventTypeName) -> $(conT stateName) |]
+  handleFuncType <- [t|$(conT stateName) -> $(conT $ mkName eventTypeName) -> $(conT stateName)|]
   handleFuncBodies <- mapM (handleFuncBody stateName) events
-  let
-    handleTypeDecls =
-      [ SigD handleFuncName handleFuncType
-      , FunD handleFuncName handleFuncBodies
-      ]
+  let handleTypeDecls =
+        [ SigD handleFuncName handleFuncType,
+          FunD handleFuncName handleFuncBodies
+        ]
 
   -- Make the projection type
-  projectionType <- [t| Projection $(conT stateName) $(conT $ mkName eventTypeName) |]
-  let
-    projectionTypeName = mkName $ nameBase stateName ++ "Projection"
-    projectionTypeDecl = TySynD projectionTypeName [] projectionType
+  projectionType <- [t|Projection $(conT stateName) $(conT $ mkName eventTypeName)|]
+  let projectionTypeName = mkName $ nameBase stateName ++ "Projection"
+      projectionTypeDecl = TySynD projectionTypeName [] projectionType
 
   -- Make the projection
-  projectionFuncExpr <- [e| Projection $(varE stateDefault) $(varE handleFuncName) |]
-  let
-    projectionFuncName = mkName $ firstCharToLower (nameBase stateName) ++ "Projection"
-    projectionFuncClause = Clause [] (NormalB projectionFuncExpr) []
-    projectionDecls =
-      [ SigD projectionFuncName (ConT projectionTypeName)
-      , FunD projectionFuncName [projectionFuncClause]
-      ]
+  projectionFuncExpr <- [e|Projection $(varE stateDefault) $(varE handleFuncName)|]
+  let projectionFuncName = mkName $ firstCharToLower (nameBase stateName) ++ "Projection"
+      projectionFuncClause = Clause [] (NormalB projectionFuncExpr) []
+      projectionDecls =
+        [ SigD projectionFuncName (ConT projectionTypeName),
+          FunD projectionFuncName [projectionFuncClause]
+        ]
 
   return $ sumTypeDecls ++ handleTypeDecls ++ [projectionTypeDecl] ++ projectionDecls
 
 handleFuncBody :: Name -> Name -> Q Clause
 handleFuncBody stateName event = do
-  let
-    statePattern = VarP (mkName "state")
-    eventPattern = ConP (mkName $ nameBase stateName ++ nameBase event) [] [VarP (mkName "event")]
-    handleFuncName = mkName $ "handle" ++ nameBase event
-  constructor <- [e| $(varE handleFuncName) $(varE $ mkName "state") $(varE $ mkName "event") |]
+  let statePattern = VarP (mkName "state")
+      eventPattern = ConP (mkName $ nameBase stateName ++ nameBase event) [] [VarP (mkName "event")]
+      handleFuncName = mkName $ "handle" ++ nameBase event
+  constructor <- [e|$(varE handleFuncName) $(varE $ mkName "state") $(varE $ mkName "event")|]
   return $ Clause [statePattern, eventPattern] (NormalB constructor) []
 
 firstCharToLower :: String -> String
 firstCharToLower [] = []
-firstCharToLower (x:xs) = toLower x : xs
+firstCharToLower (x : xs) = toLower x : xs

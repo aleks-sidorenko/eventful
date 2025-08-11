@@ -3,10 +3,9 @@
 module Eventium.Store.SqliteSpec (spec) where
 
 import Database.Persist.Sqlite
-import Test.Hspec
-
 import Eventium.Store.Sqlite
 import Eventium.TestHelpers
+import Test.Hspec
 
 spec :: Spec
 spec = do
@@ -23,9 +22,8 @@ spec = do
 makeStore :: IO (VersionedEventStoreWriter (SqlPersistT IO) CounterEvent, VersionedEventStoreReader (SqlPersistT IO) CounterEvent, ConnectionPool)
 makeStore = do
   pool <- liftIO $ runNoLoggingT (createSqlitePool ":memory:" 1)
-  let
-    writer = serializedEventStoreWriter jsonStringSerializer $ sqliteEventStoreWriter defaultSqlEventStoreConfig
-    reader = serializedVersionedEventStoreReader jsonStringSerializer $ sqlEventStoreReader defaultSqlEventStoreConfig
+  let writer = serializedEventStoreWriter jsonStringSerializer $ sqliteEventStoreWriter defaultSqlEventStoreConfig
+      reader = serializedVersionedEventStoreReader jsonStringSerializer $ sqlEventStoreReader defaultSqlEventStoreConfig
   initializeSqliteEventStore defaultSqlEventStoreConfig pool
   return (writer, reader, pool)
 
@@ -43,9 +41,8 @@ sqliteStoreGlobalRunner = GlobalStreamEventStoreRunner $ \action -> do
 makeIOStore :: IO (VersionedEventStoreWriter IO CounterEvent, VersionedEventStoreReader IO CounterEvent, ConnectionPool)
 makeIOStore = do
   (writer, reader, pool) <- makeStore
-  let
-    writer' = runEventStoreWriterUsing (`runSqlPool` pool) writer
-    reader' = runEventStoreReaderUsing (`runSqlPool` pool) reader
+  let writer' = runEventStoreWriterUsing (`runSqlPool` pool) writer
+      reader' = runEventStoreReaderUsing (`runSqlPool` pool) reader
   return (writer', reader', pool)
 
 sqliteIOStoreRunner :: EventStoreRunner IO
@@ -56,7 +53,6 @@ sqliteIOStoreRunner = EventStoreRunner $ \action -> do
 sqliteIOStoreGlobalRunner :: GlobalStreamEventStoreRunner IO
 sqliteIOStoreGlobalRunner = GlobalStreamEventStoreRunner $ \action -> do
   (writer, _, pool) <- makeIOStore
-  let
-    globalStore = serializedGlobalEventStoreReader jsonStringSerializer (sqlGlobalEventStoreReader defaultSqlEventStoreConfig)
-    globalStore' = runEventStoreReaderUsing (`runSqlPool` pool) globalStore
+  let globalStore = serializedGlobalEventStoreReader jsonStringSerializer (sqlGlobalEventStoreReader defaultSqlEventStoreConfig)
+      globalStore' = runEventStoreReaderUsing (`runSqlPool` pool) globalStore
   action writer globalStore'

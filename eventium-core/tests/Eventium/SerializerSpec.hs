@@ -5,14 +5,15 @@ module Eventium.SerializerSpec (spec) where
 
 import Data.Dynamic
 import Data.Typeable (typeOf)
+import Eventium.Serializer
+import Eventium.TH.SumTypeSerializer
 import GHC.Generics
 import Test.Hspec
 
-import Eventium.Serializer
-import Eventium.TH.SumTypeSerializer
-
 data EventA = EventA deriving (Show, Eq)
+
 data EventB = EventB deriving (Show, Eq)
+
 data EventC = EventC deriving (Show, Eq)
 
 data AllEvents

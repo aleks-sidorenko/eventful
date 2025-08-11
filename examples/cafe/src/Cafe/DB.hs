@@ -13,23 +13,25 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Cafe.DB
-  ( openTab
-  , getTabUuid
-  , migrateTabEntity
-  , TabEntity (..)
-  , TabEntityId
-  , Key (..)
-  ) where
+  ( openTab,
+    getTabUuid,
+    migrateTabEntity,
+    TabEntity (..),
+    TabEntityId,
+    Key (..),
+  )
+where
 
 import Control.Monad.IO.Class
 import Database.Persist
 import Database.Persist.Sql
 import Database.Persist.TH
-
 import Eventium
-import Eventium.Store.Sqlite  ()
+import Eventium.Store.Sqlite ()
 
-share [mkPersist sqlSettings, mkMigrate "migrateTabEntity"] [persistLowerCase|
+share
+  [mkPersist sqlSettings, mkMigrate "migrateTabEntity"]
+  [persistLowerCase|
 TabEntity sql=tabs
     projectionId UUID
     deriving Show

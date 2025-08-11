@@ -6,19 +6,22 @@
 
 module Eventium.Serializer
   ( -- * Class
-    Serializer (..)
-  , simpleSerializer
-  , composeSerializers
+    Serializer (..),
+    simpleSerializer,
+    composeSerializers,
+
     -- * Common serializers
-  , idSerializer
-  , traverseSerializer
-  , jsonSerializer
-  , jsonTextSerializer
-  , dynamicSerializer
+    idSerializer,
+    traverseSerializer,
+    jsonSerializer,
+    jsonTextSerializer,
+    dynamicSerializer,
+
     -- * Sum types
-  , EventSumType (..)
-  , eventSumTypeSerializer
-  ) where
+    EventSumType (..),
+    eventSumTypeSerializer,
+  )
+where
 
 import Control.Applicative ((<|>))
 import Data.Aeson
@@ -33,26 +36,26 @@ import GHC.Generics
 -- @b@. In plain English, this means that you can go from @a@ to @b@, and you
 -- can 'Maybe' go from @b@ back to @a@. This is often used to serialize events
 -- to an event store, and then deserialize them back.
-data Serializer a b =
-  Serializer
-  { serialize :: a -> b
-  , deserialize :: b -> Maybe a
-  , deserializeEither :: b -> Either String a
-    -- ^ Deserialize with additional information on failure
+data Serializer a b
+  = Serializer
+  { serialize :: a -> b,
+    deserialize :: b -> Maybe a,
+    -- | Deserialize with additional information on failure
+    deserializeEither :: b -> Either String a
   }
 
 -- | Simple constructor to just use 'deserialize' to construct
 -- 'deserializeEither'.
-simpleSerializer
-  :: (a -> b)
-  -> (b -> Maybe a)
-  -> Serializer a b
+simpleSerializer ::
+  (a -> b) ->
+  (b -> Maybe a) ->
+  Serializer a b
 simpleSerializer serialize' deserialize' =
   Serializer
-  { serialize = serialize'
-  , deserialize = deserialize'
-  , deserializeEither = maybe (Left "Serializable: Failed to deserialize") Right . deserialize'
-  }
+    { serialize = serialize',
+      deserialize = deserialize',
+      deserializeEither = maybe (Left "Serializable: Failed to deserialize") Right . deserialize'
+    }
 
 -- | Apply an intermediate 'Serializer' to a serializer to go from type @a@ to
 -- @c@ with @b@ in the middle. Note that with deserializing, if the conversion
@@ -70,11 +73,11 @@ idSerializer :: Serializer a a
 idSerializer = simpleSerializer id Just
 
 -- | Uses 'Traversable' to wrap a 'Serializer'.
-traverseSerializer
-  :: (Traversable t)
-  => Serializer a b
-  -> Serializer (t a) (t b)
-traverseSerializer Serializer{..} =
+traverseSerializer ::
+  (Traversable t) =>
+  Serializer a b ->
+  Serializer (t a) (t b)
+traverseSerializer Serializer {..} =
   Serializer serialize' deserialize' deserializeEither'
   where
     serialize' = fmap serialize
@@ -85,26 +88,26 @@ traverseSerializer Serializer{..} =
 jsonSerializer :: (ToJSON a, FromJSON a) => Serializer a Value
 jsonSerializer =
   Serializer
-  { serialize = toJSON
-  , deserialize = \x ->
-      case fromJSON x of
-        Success a -> Just a
-        Error _ -> Nothing
-  , deserializeEither = \x ->
-      case fromJSON x of
-        Success a -> Right a
-        Error e -> Left e
-  }
+    { serialize = toJSON,
+      deserialize = \x ->
+        case fromJSON x of
+          Success a -> Just a
+          Error _ -> Nothing,
+      deserializeEither = \x ->
+        case fromJSON x of
+          Success a -> Right a
+          Error e -> Left e
+    }
 
 -- | A 'Serializer' to convert JSON to/from lazy text. Useful for Sql event
 -- stores that store JSON values as text.
 jsonTextSerializer :: (ToJSON a, FromJSON a) => Serializer a TL.Text
 jsonTextSerializer =
   Serializer
-  { serialize = TLE.decodeUtf8 . encode
-  , deserialize = decode . TLE.encodeUtf8
-  , deserializeEither = eitherDecode . TLE.encodeUtf8
-  }
+    { serialize = TLE.decodeUtf8 . encode,
+      deserialize = decode . TLE.encodeUtf8,
+      deserializeEither = eitherDecode . TLE.encodeUtf8
+    }
 
 -- | A 'Serializer' for 'Dynamic' values using 'toDyn' and 'fromDynamic'.
 dynamicSerializer :: (Typeable a) => Serializer a Dynamic
@@ -118,8 +121,8 @@ eventSumTypeSerializer = simpleSerializer serialize' deserialize'
   where
     serialize' event =
       fromMaybe
-      (error $ "Failure in eventSumTypeSerializer. Can't serialize " ++ show (typeOf event))
-      (eventFromDyn $ eventToDyn event)
+        (error $ "Failure in eventSumTypeSerializer. Can't serialize " ++ show (typeOf event))
+        (eventFromDyn $ eventToDyn event)
     deserialize' = eventFromDyn . eventToDyn
 
 -- | This is a type class for serializing sum types of events to 'Dynamic'
@@ -161,7 +164,6 @@ eventSumTypeSerializer = simpleSerializer serialize' deserialize'
 --
 -- >>> eventFromDyn (eventToDyn (MyEventsEventA EventA)) :: Maybe AllEvents
 -- Just (AllEventsEventA EventA)
---
 class EventSumType a where
   -- | Convert an event to a 'Dynamic' without the constructor tag
   eventToDyn :: a -> Dynamic

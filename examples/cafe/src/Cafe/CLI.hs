@@ -1,10 +1,15 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Cafe.CLI
-  ( cliMain
-  , printJSONPretty
-  ) where
+  ( cliMain,
+    printJSONPretty,
+  )
+where
 
+import Cafe.CLI.Options
+import Cafe.CLI.Transformer
+import Cafe.DB
+import Cafe.Models.Tab
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger (runNoLoggingT)
@@ -13,19 +18,13 @@ import Data.Aeson.Encode.Pretty
 import qualified Data.ByteString.Lazy.Char8 as BSL
 import Data.Text (pack)
 import Database.Persist.Sqlite
-import Safe
-
-import Eventium.Store.Sqlite
 import Eventium
-
-import Cafe.CLI.Options
-import Cafe.CLI.Transformer
-import Cafe.DB
-import Cafe.Models.Tab
+import Eventium.Store.Sqlite
+import Safe
 
 cliMain :: IO ()
 cliMain = do
-  Options{..} <- runOptionsParser
+  Options {..} <- runOptionsParser
 
   -- Set up DB connection
   pool <- runNoLoggingT $ createSqlitePool (pack optionsDatabaseFile) 1
@@ -46,19 +45,25 @@ runCLICommand ListMenu = liftIO $ do
   mapM_ printPair (zip [0 :: Int ..] $ map unDrink allDrinks)
 runCLICommand (ViewTab tabId) = do
   uuid <- fromJustNote "Could not find tab with given id" <$> runDB (getTabUuid tabId)
-  StreamProjection{..} <- runDB $ getLatestStreamProjection cliEventStoreReader (versionedStreamProjection uuid (serializedProjection tabProjection jsonStringSerializer))
+  StreamProjection {..} <- runDB $ getLatestStreamProjection cliEventStoreReader (versionedStreamProjection uuid (serializedProjection tabProjection jsonStringSerializer))
   liftIO $ printJSONPretty streamProjectionState
 runCLICommand (TabCommand tabId command) = do
   uuid <- fromJustNote "Could not find tab with given id" <$> runDB (getTabUuid tabId)
-  result <- runDB $ applyCommandHandler cliEventStore cliEventStoreReader
-    (serializedCommandHandler tabCommandHandler jsonStringSerializer idSerializer) uuid command
+  result <-
+    runDB $
+      applyCommandHandler
+        cliEventStore
+        cliEventStoreReader
+        (serializedCommandHandler tabCommandHandler jsonStringSerializer idSerializer)
+        uuid
+        command
   case result of
     [] -> liftIO . putStrLn $ "Error! "
     events -> do
       liftIO . putStrLn $ "Events: " ++ show events
-      StreamProjection{..} <- runDB $ getLatestStreamProjection cliEventStoreReader (versionedStreamProjection uuid (serializedProjection tabProjection jsonStringSerializer))
+      StreamProjection {..} <- runDB $ getLatestStreamProjection cliEventStoreReader (versionedStreamProjection uuid (serializedProjection tabProjection jsonStringSerializer))
       liftIO . putStrLn $ "Latest state:"
       liftIO $ printJSONPretty streamProjectionState
 
 printJSONPretty :: (ToJSON a) => a -> IO ()
-printJSONPretty = BSL.putStrLn . encodePretty' (defConfig { confIndent = Spaces 2 })
+printJSONPretty = BSL.putStrLn . encodePretty' (defConfig {confIndent = Spaces 2})

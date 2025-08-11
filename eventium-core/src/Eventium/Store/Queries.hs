@@ -2,24 +2,26 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Eventium.Store.Queries
-  ( QueryRange (..)
-  , QueryStart (..)
-  , QueryLimit (..)
-  , allEvents
-  , eventsUntil
-  , eventsStartingAt
-  , eventsStartingAtUntil
-  , eventsStartingAtTakeLimit
-  ) where
+  ( QueryRange (..),
+    QueryStart (..),
+    QueryLimit (..),
+    allEvents,
+    eventsUntil,
+    eventsStartingAt,
+    eventsStartingAtUntil,
+    eventsStartingAtTakeLimit,
+  )
+where
 
 -- | This type defines how to query an event stream. It defines the stream key
 -- and the start/stop points for the query.
 data QueryRange key position
   = QueryRange
-  { queryRangeKey :: key
-  , queryRangeStart :: QueryStart position
-  , queryRangeLimit :: QueryLimit position
-  } deriving (Show, Eq)
+  { queryRangeKey :: key,
+    queryRangeStart :: QueryStart position,
+    queryRangeLimit :: QueryLimit position
+  }
+  deriving (Show, Eq)
 
 -- | This type defines where an event store query starts.
 data QueryStart position

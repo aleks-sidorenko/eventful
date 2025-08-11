@@ -1,18 +1,18 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Eventium.Store.Sql.Orphans
   (
-  ) where
+  )
+where
 
+import qualified Data.ByteString as BS
 import Data.Proxy
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified Data.ByteString as BS
 import Data.UUID
 import Database.Persist
 import Database.Persist.Sql
-
 import Eventium.Store.Class
 import Eventium.UUID
 
