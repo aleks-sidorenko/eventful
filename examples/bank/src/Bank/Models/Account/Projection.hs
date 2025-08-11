@@ -98,7 +98,7 @@ handleAccountEvent account (AccountTransferRejectedAccountEvent AccountTransferR
   where
     transfers = account ^. accountPendingTransfers
     mTransfer = findAccountTransferById transfers accountTransferRejectedTransferId
-    transfers' = maybe transfers (flip delete transfers) mTransfer
+    transfers' = maybe transfers (`delete` transfers) mTransfer
 handleAccountEvent account (AccountCreditedFromTransferAccountEvent AccountCreditedFromTransfer{..}) =
   account
   & accountBalance +~ accountCreditedFromTransferAmount

@@ -27,12 +27,12 @@ makeStore
        , ConnectionPool)
 makeStore = do
   let
-    makeConnString host port user pass db = (
+    makeConnString host port user pass db =
           "host=" <> host
       <> " port=" <> port
       <> " user=" <> user
       <> " dbname=" <> db
-      <> " password=" <> pass)
+      <> " password=" <> pass
     writer = serializedEventStoreWriter jsonStringSerializer $
         postgresqlEventStoreWriter defaultSqlEventStoreConfig
     reader = serializedVersionedEventStoreReader jsonStringSerializer $
@@ -54,8 +54,8 @@ getEnvDef name def = liftIO $ maybe def UTF8.fromString <$> lookupEnv name
 
 truncateTables :: MonadIO m => SqlPersistT m ()
 truncateTables = do
-    -- Simplified table truncation without using deprecated API
-    rawExecute "DELETE FROM events" []
+    -- Ensure both rows and the sequence are reset between tests
+    rawExecute "TRUNCATE TABLE events RESTART IDENTITY" []
 
 postgresStoreRunner :: EventStoreRunner (SqlPersistT IO)
 postgresStoreRunner = EventStoreRunner $ \action -> do

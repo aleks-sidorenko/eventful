@@ -6,6 +6,9 @@ module Eventium.Store.Sql.Orphans
   ) where
 
 import Data.Proxy
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
+import qualified Data.ByteString as BS
 import Data.UUID
 import Database.Persist
 import Database.Persist.Sql
@@ -19,7 +22,13 @@ instance PersistField UUID where
     case uuidFromText t of
       Just x -> Right x
       Nothing -> Left "Invalid UUID"
-  fromPersistValue _ = Left "Expected PersistText for UUID"
+  fromPersistValue (PersistByteString bs) =
+    maybe (Left "Invalid UUID") Right (uuidFromText (TE.decodeUtf8 bs))
+  fromPersistValue (PersistDbSpecific bs) =
+    maybe (Left "Invalid UUID") Right (uuidFromText (TE.decodeUtf8 bs))
+  fromPersistValue (PersistLiteral_ _ bs) =
+    maybe (Left "Invalid UUID") Right (uuidFromText (TE.decodeUtf8 bs))
+  fromPersistValue v = Left $ "Expected UUID-compatible PersistValue, got: " <> T.pack (show v)
 
 instance PersistFieldSql UUID where
   sqlType _ = SqlOther "uuid"

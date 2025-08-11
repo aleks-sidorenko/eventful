@@ -16,12 +16,12 @@ customerEvents =
   , ''CustomerCreationRejected
   ]
 
-data CustomerCreated =
+newtype CustomerCreated =
   CustomerCreated
   { customerCreatedName :: String
   } deriving (Show, Eq)
 
-data CustomerCreationRejected
+newtype CustomerCreationRejected
   = CustomerCreationRejected
   { customerCreationRejectedReason :: String
   } deriving (Show, Eq)

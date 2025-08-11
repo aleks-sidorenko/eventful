@@ -44,8 +44,8 @@ makeIOStore :: IO (VersionedEventStoreWriter IO CounterEvent, VersionedEventStor
 makeIOStore = do
   (writer, reader, pool) <- makeStore
   let
-    writer' = runEventStoreWriterUsing (flip runSqlPool pool) writer
-    reader' = runEventStoreReaderUsing (flip runSqlPool pool) reader
+    writer' = runEventStoreWriterUsing (`runSqlPool` pool) writer
+    reader' = runEventStoreReaderUsing (`runSqlPool` pool) reader
   return (writer', reader', pool)
 
 sqliteIOStoreRunner :: EventStoreRunner IO
@@ -58,5 +58,5 @@ sqliteIOStoreGlobalRunner = GlobalStreamEventStoreRunner $ \action -> do
   (writer, _, pool) <- makeIOStore
   let
     globalStore = serializedGlobalEventStoreReader jsonStringSerializer (sqlGlobalEventStoreReader defaultSqlEventStoreConfig)
-    globalStore' = runEventStoreReaderUsing (flip runSqlPool pool) globalStore
+    globalStore' = runEventStoreReaderUsing (`runSqlPool` pool) globalStore
   action writer globalStore'

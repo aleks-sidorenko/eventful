@@ -22,6 +22,8 @@ module Eventium.Store.Sql.DefaultEntity
   ) where
 
 import Database.Persist.TH
+import Database.Persist (Key)
+import Database.Persist.Sql (toSqlKey, fromSqlKey)
 
 import Eventium.Store.Class
 import Eventium.UUID
@@ -32,7 +34,6 @@ import Eventium.Store.Sql.Orphans ()
 
 share [mkPersist sqlSettings, mkMigrate "migrateSqlEvent"] [persistLowerCase|
 SqlEvent sql=events
-    Id SequenceNumber sql=sequence_number default=0 autoincrement
     uuid UUID
     version EventVersion
     event JSONString
@@ -40,12 +41,20 @@ SqlEvent sql=events
     deriving Show
 |]
 
+sqlEventMakeKey :: SequenceNumber -> Key SqlEvent
+sqlEventMakeKey sequenceNumber =
+  toSqlKey (fromIntegral (unSequenceNumber sequenceNumber))
+
+sqlEventUnKey :: Key SqlEvent -> SequenceNumber
+sqlEventUnKey key =
+  SequenceNumber (fromIntegral (fromSqlKey key))
+
 defaultSqlEventStoreConfig :: SqlEventStoreConfig SqlEvent JSONString
 defaultSqlEventStoreConfig =
   SqlEventStoreConfig
   SqlEvent
-  SqlEventKey
-  (\(SqlEventKey seqNum) -> seqNum)
+  sqlEventMakeKey
+  sqlEventUnKey
   sqlEventUuid
   sqlEventVersion
   sqlEventEvent

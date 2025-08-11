@@ -23,6 +23,7 @@ import Data.Aeson
 import Data.Aeson.Casing
 import Data.Aeson.TH
 import Data.List (foldl')
+import Data.Either (fromRight)
 import Data.Maybe (catMaybes, isJust)
 
 import Eventium
@@ -112,7 +113,7 @@ applyTabEvent state (FoodServed indexes) =
 applyTabEvent state (TabClosed _) = state & tabStateIsOpen .~ False
 
 setIndexesToNothing :: [Int] -> [Maybe a] -> [Maybe a]
-setIndexesToNothing indexes = map (\(i, x) -> if i `elem` indexes then Nothing else x) . zip [0..]
+setIndexesToNothing indexes = zipWith (\i x -> if i `elem` indexes then Nothing else x) [0 ..]
 
 getListItemsByIndexes :: [Int] -> [a] -> [a]
 getListItemsByIndexes indexes = map snd . filter ((`elem` indexes) . fst) . zip [0..]
@@ -161,7 +162,7 @@ applyTabCommand _ (MarkFoodServed indexes) = Right [FoodServed indexes]
 type TabCommandHandler = CommandHandler TabState TabEvent TabCommand
 
 tabCommandHandler :: TabCommandHandler
-tabCommandHandler = CommandHandler (either (const []) id `compose` applyTabCommand) tabProjection
+tabCommandHandler = CommandHandler (fromRight [] `compose` applyTabCommand) tabProjection
   where compose = (.).(.)
 
 -- | List of all drinks. The menu could be its own CommandHandler in the future.
