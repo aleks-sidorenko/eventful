@@ -1,27 +1,28 @@
 module Eventium.ReadModel.Memory
-  ( memoryReadModel
-  ) where
+  ( memoryReadModel,
+  )
+where
 
 import Control.Concurrent.STM
 import Control.Monad.IO.Class
-import Safe (maximumDef)
-
 import Eventium.ReadModel.Class
 import Eventium.Store.Class
+import Safe (maximumDef)
 
 data MemoryReadModelData modeldata
   = MemoryReadModelData
-  { memoryReadModelDataLatestSequenceNumber :: SequenceNumber
-  , _memoryReadModelDataValue :: modeldata
-  } deriving (Show)
+  { memoryReadModelDataLatestSequenceNumber :: SequenceNumber,
+    _memoryReadModelDataValue :: modeldata
+  }
+  deriving (Show)
 
 -- | Creates a read model that wraps some pure data in a TVar and manages the
 -- latest sequence number for you.
-memoryReadModel
-  :: (MonadIO m)
-  => modeldata
-  -> (modeldata -> [GlobalStreamEvent serialized] -> m modeldata)
-  -> IO (ReadModel (TVar (MemoryReadModelData modeldata)) serialized m)
+memoryReadModel ::
+  (MonadIO m) =>
+  modeldata ->
+  (modeldata -> [GlobalStreamEvent serialized] -> m modeldata) ->
+  IO (ReadModel (TVar (MemoryReadModelData modeldata)) serialized m)
 memoryReadModel initialValue handleEvents = do
   tvar <- newTVarIO $ MemoryReadModelData (-1) initialValue
   return $ ReadModel tvar getLatestSequence handleTVarEvents

@@ -3,29 +3,28 @@
 {-# LANGUAGE TypeOperators #-}
 
 -- | Defines an Postgresql event store.
-
 module Eventium.Store.Postgresql
-  ( postgresqlEventStoreWriter
-  , module Eventium.Store.Class
-  , module Eventium.Store.Sql
-  ) where
+  ( postgresqlEventStoreWriter,
+    module Eventium.Store.Class,
+    module Eventium.Store.Sql,
+  )
+where
 
 import Control.Monad.Reader
 import Data.Monoid ((<>))
 import Data.Text (Text)
 import Database.Persist
+import Database.Persist.Names (EntityNameDB (..), FieldNameDB (..))
 import Database.Persist.Sql
-import Database.Persist.Names (FieldNameDB(..), EntityNameDB(..))
-
 import Eventium.Store.Class
 import Eventium.Store.Sql
 
 -- | An 'EventStore' that uses a PostgreSQL database as a backend. Use
 -- 'SqlEventStoreConfig' to configure this event store.
-postgresqlEventStoreWriter
-  :: (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend, SafeToInsert entity)
-  => SqlEventStoreConfig entity serialized
-  -> VersionedEventStoreWriter (SqlPersistT m) serialized
+postgresqlEventStoreWriter ::
+  (MonadIO m, PersistEntity entity, PersistEntityBackend entity ~ SqlBackend, SafeToInsert entity) =>
+  SqlEventStoreConfig entity serialized ->
+  VersionedEventStoreWriter (SqlPersistT m) serialized
 postgresqlEventStoreWriter config = EventStoreWriter $ transactionalExpectedWriteHelper getLatestVersion storeEvents'
   where
     getLatestVersion = sqlMaxEventVersion config maxPostgresVersionSql

@@ -2,13 +2,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Eventium.ProcessManager
-  ( ProcessManager (..)
-  , ProcessManagerCommand (..)
-  , applyProcessManagerCommandsAndEvents
-  ) where
+  ( ProcessManager (..),
+    ProcessManagerCommand (..),
+    applyProcessManagerCommandsAndEvents,
+  )
+where
 
 import Control.Monad (forM_, void)
-
 import Eventium.CommandHandler
 import Eventium.Projection
 import Eventium.Store.Class
@@ -21,9 +21,9 @@ import Eventium.UUID
 -- appropriate 'CommandHandler' or Projections in other streams.
 data ProcessManager state event command
   = ProcessManager
-  { processManagerProjection :: Projection state (VersionedStreamEvent event)
-  , processManagerPendingCommands :: state -> [ProcessManagerCommand event command]
-  , processManagerPendingEvents :: state -> [StreamEvent UUID () event]
+  { processManagerProjection :: Projection state (VersionedStreamEvent event),
+    processManagerPendingCommands :: state -> [ProcessManagerCommand event command],
+    processManagerPendingEvents :: state -> [StreamEvent UUID () event]
   }
 
 -- | This is a @command@ along with the UUID of the target 'CommandHandler', as
@@ -31,26 +31,29 @@ data ProcessManager state event command
 -- to hide the @state@ type parameter on the CommandHandler.
 data ProcessManagerCommand event command
   = forall state. ProcessManagerCommand
-  { processManagerCommandTargetId :: UUID
-  , processManagerCommandCommandHandler :: CommandHandler state event command
-  , processManagerCommandCommand :: command
+  { processManagerCommandTargetId :: UUID,
+    processManagerCommandCommandHandler :: CommandHandler state event command,
+    processManagerCommandCommand :: command
   }
 
 instance (Show command, Show event) => Show (ProcessManagerCommand event command) where
   show (ProcessManagerCommand uuid _ command) =
-    "ProcessManagerCommand{processManagerCommandCommandHandlerId = " ++ show uuid ++
-    ", processManagerCommandCommand = " ++ show command ++ "}"
+    "ProcessManagerCommand{processManagerCommandCommandHandlerId = "
+      ++ show uuid
+      ++ ", processManagerCommandCommand = "
+      ++ show command
+      ++ "}"
 
 -- | Plucks the pending commands and events off of the process manager's state
 -- and applies them to the appropriate locations in the event store.
-applyProcessManagerCommandsAndEvents
-  :: (Monad m)
-  => ProcessManager state event command
-  -> VersionedEventStoreWriter m event
-  -> VersionedEventStoreReader m event
-  -> state
-  -> m ()
-applyProcessManagerCommandsAndEvents ProcessManager{..} writer reader state = do
+applyProcessManagerCommandsAndEvents ::
+  (Monad m) =>
+  ProcessManager state event command ->
+  VersionedEventStoreWriter m event ->
+  VersionedEventStoreReader m event ->
+  state ->
+  m ()
+applyProcessManagerCommandsAndEvents ProcessManager {..} writer reader state = do
   forM_ (processManagerPendingCommands state) $ \(ProcessManagerCommand targetId commandHandler command) ->
     void $ applyCommandHandler writer reader commandHandler targetId command
   forM_ (processManagerPendingEvents state) $ \(StreamEvent projectionId () event) ->

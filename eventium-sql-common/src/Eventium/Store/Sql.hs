@@ -1,6 +1,7 @@
 module Eventium.Store.Sql
-  ( module X
-  ) where
+  ( module X,
+  )
+where
 
 import Eventium.Store.Sql.DefaultEntity as X
 import Eventium.Store.Sql.JSONString as X

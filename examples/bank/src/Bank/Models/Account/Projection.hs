@@ -3,42 +3,43 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Bank.Models.Account.Projection
-  ( Account (..)
-  , accountBalance
-  , accountOwner
-  , accountPendingTransfers
-  , accountAvailableBalance
-  , PendingAccountTransfer (..)
-  , AccountEvent (..)
-  , accountProjection
-  ) where
+  ( Account (..),
+    accountBalance,
+    accountOwner,
+    accountPendingTransfers,
+    accountAvailableBalance,
+    PendingAccountTransfer (..),
+    AccountEvent (..),
+    accountProjection,
+  )
+where
 
+import Bank.Json
+import Bank.Models.Account.Events
 import Control.Lens
 import Data.Aeson.TH
 import Data.List (delete, find)
-import SumTypesX.TH
-
 import Eventium
-
-import Bank.Models.Account.Events
-import Bank.Json
+import SumTypesX.TH
 
 data Account
   = Account
-  { _accountBalance :: Double
-  , _accountOwner :: Maybe UUID
-  , _accountPendingTransfers :: [PendingAccountTransfer]
-  } deriving (Show, Eq)
+  { _accountBalance :: Double,
+    _accountOwner :: Maybe UUID,
+    _accountPendingTransfers :: [PendingAccountTransfer]
+  }
+  deriving (Show, Eq)
 
 accountDefault :: Account
 accountDefault = Account 0 Nothing []
 
 data PendingAccountTransfer
   = PendingAccountTransfer
-  { pendingAccountTransferId :: UUID
-  , pendingAccountTransferAmount :: Double
-  , pendingAccountTransferTargetAccount :: UUID
-  } deriving (Show, Eq)
+  { pendingAccountTransferId :: UUID,
+    pendingAccountTransferAmount :: Double,
+    pendingAccountTransferTargetAccount :: UUID
+  }
+  deriving (Show, Eq)
 
 deriveJSON (unPrefixLower "pendingAccountTransfer") ''PendingAccountTransfer
 
@@ -55,34 +56,35 @@ accountAvailableBalance account = account ^. accountBalance - pendingBalance
 findAccountTransferById :: [PendingAccountTransfer] -> UUID -> Maybe PendingAccountTransfer
 findAccountTransferById transfers transferId = find ((== transferId) . pendingAccountTransferId) transfers
 
-constructSumType "AccountEvent" (defaultSumTypeOptions { sumTypeOptionsTagOptions = AppendTypeNameToTags }) accountEvents
+constructSumType "AccountEvent" (defaultSumTypeOptions {sumTypeOptionsTagOptions = AppendTypeNameToTags}) accountEvents
 
 deriving instance Show AccountEvent
+
 deriving instance Eq AccountEvent
 
 handleAccountEvent :: Account -> AccountEvent -> Account
-handleAccountEvent account (AccountOpenedAccountEvent AccountOpened{..}) =
+handleAccountEvent account (AccountOpenedAccountEvent AccountOpened {..}) =
   account
-  & accountOwner ?~ accountOpenedOwner
-  & accountBalance .~ accountOpenedInitialFunding
+    & accountOwner ?~ accountOpenedOwner
+    & accountBalance .~ accountOpenedInitialFunding
 handleAccountEvent account (AccountOpenRejectedAccountEvent _) = account
-handleAccountEvent account (AccountCreditedAccountEvent AccountCredited{..}) =
+handleAccountEvent account (AccountCreditedAccountEvent AccountCredited {..}) =
   account
-  & accountBalance +~ accountCreditedAmount
-handleAccountEvent account (AccountDebitedAccountEvent AccountDebited{..}) =
+    & accountBalance +~ accountCreditedAmount
+handleAccountEvent account (AccountDebitedAccountEvent AccountDebited {..}) =
   account
-  & accountBalance -~ accountDebitedAmount
+    & accountBalance -~ accountDebitedAmount
 handleAccountEvent account (AccountDebitRejectedAccountEvent _) = account
-handleAccountEvent account (AccountTransferStartedAccountEvent AccountTransferStarted{..}) =
+handleAccountEvent account (AccountTransferStartedAccountEvent AccountTransferStarted {..}) =
   account
-  & accountPendingTransfers %~
-    cons
-    PendingAccountTransfer
-    { pendingAccountTransferId = accountTransferStartedTransferId
-    , pendingAccountTransferAmount = accountTransferStartedAmount
-    , pendingAccountTransferTargetAccount = accountTransferStartedTargetAccount
-    }
-handleAccountEvent account (AccountTransferCompletedAccountEvent AccountTransferCompleted{..}) =
+    & accountPendingTransfers
+      %~ cons
+        PendingAccountTransfer
+          { pendingAccountTransferId = accountTransferStartedTransferId,
+            pendingAccountTransferAmount = accountTransferStartedAmount,
+            pendingAccountTransferTargetAccount = accountTransferStartedTargetAccount
+          }
+handleAccountEvent account (AccountTransferCompletedAccountEvent AccountTransferCompleted {..}) =
   -- If the transfer isn't present, something is wrong, but we can't fail in an
   -- event handler.
   maybe account go (findAccountTransferById transfers accountTransferCompletedTransferId)
@@ -90,18 +92,18 @@ handleAccountEvent account (AccountTransferCompletedAccountEvent AccountTransfer
     transfers = account ^. accountPendingTransfers
     go trans =
       account
-      & accountBalance -~ pendingAccountTransferAmount trans
-      & accountPendingTransfers %~ delete trans
-handleAccountEvent account (AccountTransferRejectedAccountEvent AccountTransferRejected{..}) =
+        & accountBalance -~ pendingAccountTransferAmount trans
+        & accountPendingTransfers %~ delete trans
+handleAccountEvent account (AccountTransferRejectedAccountEvent AccountTransferRejected {..}) =
   account
-  & accountPendingTransfers .~ transfers'
+    & accountPendingTransfers .~ transfers'
   where
     transfers = account ^. accountPendingTransfers
     mTransfer = findAccountTransferById transfers accountTransferRejectedTransferId
     transfers' = maybe transfers (`delete` transfers) mTransfer
-handleAccountEvent account (AccountCreditedFromTransferAccountEvent AccountCreditedFromTransfer{..}) =
+handleAccountEvent account (AccountCreditedFromTransferAccountEvent AccountCreditedFromTransfer {..}) =
   account
-  & accountBalance +~ accountCreditedFromTransferAmount
+    & accountBalance +~ accountCreditedFromTransferAmount
 
 accountProjection :: Projection Account AccountEvent
 accountProjection = Projection accountDefault handleAccountEvent

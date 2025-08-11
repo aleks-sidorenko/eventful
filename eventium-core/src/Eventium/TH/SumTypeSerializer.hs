@@ -3,8 +3,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Eventium.TH.SumTypeSerializer
-  ( mkSumTypeSerializer
-  ) where
+  ( mkSumTypeSerializer,
+  )
+where
 
 import Data.Char (toLower)
 import Language.Haskell.TH
@@ -62,24 +63,24 @@ import SumTypesX.TH
 mkSumTypeSerializer :: String -> Name -> Name -> Q [Dec]
 mkSumTypeSerializer serializerName sourceType targetType = do
   -- Construct the serialization function
-  let
-    serializeFuncName = firstCharToLower (nameBase sourceType) ++ "To" ++ nameBase targetType
-    deserializeFuncName = firstCharToLower (nameBase targetType) ++ "To" ++ nameBase sourceType
+  let serializeFuncName = firstCharToLower (nameBase sourceType) ++ "To" ++ nameBase targetType
+      deserializeFuncName = firstCharToLower (nameBase targetType) ++ "To" ++ nameBase sourceType
   -- Generate the sum type converter functions
   serializeDecls <- sumTypeConverter serializeFuncName sourceType targetType
   deserializeDecls <- partialSumTypeConverter deserializeFuncName targetType sourceType
 
   -- Construct the serializer
-  serializerTypeDecl <- [t| $(conT $ mkName "Serializer") $(conT sourceType) $(conT targetType) |]
-  serializerExp <- [e| $(varE $ mkName "simpleSerializer") $(varE $ mkName serializeFuncName) $(varE $ mkName deserializeFuncName) |]
-  let
-    serializerClause = Clause [] (NormalB serializerExp) []
+  serializerTypeDecl <- [t|$(conT $ mkName "Serializer") $(conT sourceType) $(conT targetType)|]
+  serializerExp <- [e|$(varE $ mkName "simpleSerializer") $(varE $ mkName serializeFuncName) $(varE $ mkName deserializeFuncName)|]
+  let serializerClause = Clause [] (NormalB serializerExp) []
 
   return $
-    [ SigD (mkName serializerName) serializerTypeDecl
-    , FunD (mkName serializerName) [serializerClause]
-    ] ++ serializeDecls ++ deserializeDecls
+    [ SigD (mkName serializerName) serializerTypeDecl,
+      FunD (mkName serializerName) [serializerClause]
+    ]
+      ++ serializeDecls
+      ++ deserializeDecls
 
 firstCharToLower :: String -> String
 firstCharToLower [] = []
-firstCharToLower (x:xs) = toLower x : xs
+firstCharToLower (x : xs) = toLower x : xs

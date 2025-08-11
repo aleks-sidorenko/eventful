@@ -1,16 +1,15 @@
 module Bank.CLI.RunCommand
-  ( runCLICommand
-  ) where
+  ( runCLICommand,
+  )
+where
 
-import Control.Monad (void)
-import Database.Persist.Sqlite
-
-import Eventium
-
-import Bank.Models
 import Bank.CLI.Options
 import Bank.CLI.Store
+import Bank.Models
 import Bank.ReadModels.CustomerAccounts
+import Control.Monad (void)
+import Database.Persist.Sqlite
+import Eventium
 
 runCLICommand :: ConnectionPool -> CLICommand -> IO ()
 runCLICommand pool (CreateCustomerCLI createCommand) = do
@@ -20,14 +19,14 @@ runCLICommand pool (CreateCustomerCLI createCommand) = do
   let command = CreateCustomerCommand createCommand
   void $ runDB pool $ applyCommandHandler cliEventStoreWriter cliEventStoreReader customerBankCommandHandler uuid command
 runCLICommand pool (ViewAccountCLI uuid) = do
-  latestStreamProjection <- runDB pool $
-    getLatestStreamProjection cliEventStoreReader (versionedStreamProjection uuid accountBankProjection)
+  latestStreamProjection <-
+    runDB pool $
+      getLatestStreamProjection cliEventStoreReader (versionedStreamProjection uuid accountBankProjection)
   printJSONPretty (streamProjectionState latestStreamProjection)
 runCLICommand pool (ViewCustomerAccountsCLI name) = do
   events <- runDB pool $ getEvents cliGlobalEventStoreReader (allEvents ())
-  let
-    allCustomerAccounts = latestProjection customerAccountsProjection (streamEventEvent <$> events)
-    thisCustomerAccounts = getCustomerAccountsFromName allCustomerAccounts name
+  let allCustomerAccounts = latestProjection customerAccountsProjection (streamEventEvent <$> events)
+      thisCustomerAccounts = getCustomerAccountsFromName allCustomerAccounts name
   case thisCustomerAccounts of
     [] -> putStrLn "No accounts found"
     accounts -> mapM_ printJSONPretty accounts

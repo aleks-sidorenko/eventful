@@ -2,13 +2,11 @@ module Eventium.Store.MemorySpec (spec) where
 
 import Control.Concurrent.STM
 import Control.Monad.State.Strict
-import Test.Hspec
-
 import Eventium.Serializer
 import Eventium.Store.Memory
 import Eventium.TestHelpers
-
 import MemoryTestImport
+import Test.Hspec
 
 spec :: Spec
 spec = do
@@ -31,33 +29,29 @@ spec = do
 tvarRunner :: EventStoreRunner STM
 tvarRunner = EventStoreRunner $ \action -> do
   eventTVar <- eventMapTVar
-  let
-    writer = tvarEventStoreWriter eventTVar
-    reader = tvarEventStoreReader eventTVar
+  let writer = tvarEventStoreWriter eventTVar
+      reader = tvarEventStoreReader eventTVar
   atomically $ action writer reader
 
 tvarGlobalRunner :: GlobalStreamEventStoreRunner STM
 tvarGlobalRunner = GlobalStreamEventStoreRunner $ \action -> do
   eventTVar <- eventMapTVar
-  let
-    writer = tvarEventStoreWriter eventTVar
-    globalReader = tvarGlobalEventStoreReader eventTVar
+  let writer = tvarEventStoreWriter eventTVar
+      globalReader = tvarGlobalEventStoreReader eventTVar
   atomically $ action writer globalReader
 
 tvarDynamicRunner :: EventStoreRunner STM
 tvarDynamicRunner = EventStoreRunner $ \action -> do
   eventTVar <- eventMapTVar
-  let
-    writer = serializedEventStoreWriter dynamicSerializer $ tvarEventStoreWriter eventTVar
-    reader = serializedVersionedEventStoreReader dynamicSerializer $ tvarEventStoreReader eventTVar
+  let writer = serializedEventStoreWriter dynamicSerializer $ tvarEventStoreWriter eventTVar
+      reader = serializedVersionedEventStoreReader dynamicSerializer $ tvarEventStoreReader eventTVar
   atomically $ action writer reader
 
 tvarDynamicGlobalRunner :: GlobalStreamEventStoreRunner STM
 tvarDynamicGlobalRunner = GlobalStreamEventStoreRunner $ \action -> do
   eventTVar <- eventMapTVar
-  let
-    writer = serializedEventStoreWriter dynamicSerializer $ tvarEventStoreWriter eventTVar
-    globalReader = serializedGlobalEventStoreReader dynamicSerializer $ tvarGlobalEventStoreReader eventTVar
+  let writer = serializedEventStoreWriter dynamicSerializer $ tvarEventStoreWriter eventTVar
+      globalReader = serializedGlobalEventStoreReader dynamicSerializer $ tvarGlobalEventStoreReader eventTVar
   atomically $ action writer globalReader
 
 stateStoreRunner :: EventStoreRunner (StateT (EventMap CounterEvent) IO)

@@ -1,6 +1,7 @@
 module Bank.Models.Account
-  ( module X
-  ) where
+  ( module X,
+  )
+where
 
 import Bank.Models.Account.CommandHandler as X
 import Bank.Models.Account.Commands as X

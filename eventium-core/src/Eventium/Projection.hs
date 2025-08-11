@@ -1,25 +1,25 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Eventium.Projection
-  ( Projection (..)
-  , latestProjection
-  , allProjections
-  , StreamProjection (..)
-  , VersionedStreamProjection
-  , GlobalStreamProjection
-  , streamProjection
-  , versionedStreamProjection
-  , globalStreamProjection
-  , streamProjectionEventHandler
-  , getLatestStreamProjection
-  , serializedProjection
-  , projectionMapMaybe
-  ) where
+  ( Projection (..),
+    latestProjection,
+    allProjections,
+    StreamProjection (..),
+    VersionedStreamProjection,
+    GlobalStreamProjection,
+    streamProjection,
+    versionedStreamProjection,
+    globalStreamProjection,
+    streamProjectionEventHandler,
+    getLatestStreamProjection,
+    serializedProjection,
+    projectionMapMaybe,
+  )
+where
 
 import Data.Foldable (foldl')
 import Data.Functor.Contravariant
 import Data.List (scanl')
-
 import Eventium.Serializer
 import Eventium.Store.Class
 import Eventium.UUID
@@ -32,11 +32,11 @@ import Eventium.UUID
 -- on the given event.
 data Projection state event
   = Projection
-  { projectionSeed :: state
-    -- ^ Initial state of a projection
-  , projectionEventHandler :: state -> event -> state
-    -- ^ The function that applies and event to the current state, producing a
+  { -- | Initial state of a projection
+    projectionSeed :: state,
+    -- | The function that applies and event to the current state, producing a
     -- new state.
+    projectionEventHandler :: state -> event -> state
   }
 
 instance Contravariant (Projection state) where
@@ -61,77 +61,77 @@ allProjections (Projection seed handler) = scanl' handler seed
 -- is caught up to.
 data StreamProjection key position state event
   = StreamProjection
-  { streamProjectionKey :: !key
-  , streamProjectionPosition :: !position
-  , streamProjectionProjection :: !(Projection state event)
-  , streamProjectionState :: !state
+  { streamProjectionKey :: !key,
+    streamProjectionPosition :: !position,
+    streamProjectionProjection :: !(Projection state event),
+    streamProjectionState :: !state
   }
 
 type VersionedStreamProjection = StreamProjection UUID EventVersion
+
 type GlobalStreamProjection state event = StreamProjection () SequenceNumber state (VersionedStreamEvent event)
 
 -- | Initialize a 'StreamProjection' with a 'Projection', key, and order key.
-streamProjection
-  :: key
-  -> position
-  -> Projection state event
-  -> StreamProjection key position state event
-streamProjection key position projection@Projection{..} =
+streamProjection ::
+  key ->
+  position ->
+  Projection state event ->
+  StreamProjection key position state event
+streamProjection key position projection@Projection {..} =
   StreamProjection key position projection projectionSeed
 
 -- | Initialize a 'VersionedStreamProjection'.
-versionedStreamProjection
-  :: UUID
-  -> Projection state event
-  -> VersionedStreamProjection state event
+versionedStreamProjection ::
+  UUID ->
+  Projection state event ->
+  VersionedStreamProjection state event
 versionedStreamProjection uuid = streamProjection uuid (-1)
 
 -- | Initialize a 'GlobalStreamProjection'.
-globalStreamProjection
-  :: Projection state (VersionedStreamEvent event)
-  -> GlobalStreamProjection state event
+globalStreamProjection ::
+  Projection state (VersionedStreamEvent event) ->
+  GlobalStreamProjection state event
 globalStreamProjection = streamProjection () 0
 
 -- | Apply an event to the 'StreamProjection'. NOTE: There is no guarantee that
 -- the order key for the event is greater than the current order key in the
 -- 'StreamProjection'. This function will simply update the 'StreamProjection'
 -- to use the order key of the event.
-streamProjectionEventHandler
-  :: StreamProjection key position state event
-  -> StreamEvent eventKey position event
-  -> StreamProjection key position state event
-streamProjectionEventHandler StreamProjection{..} event =
-  let
-    Projection{..} = streamProjectionProjection
-    position' = streamEventPosition event
-    state' = projectionEventHandler streamProjectionState (streamEventEvent event)
-  in StreamProjection streamProjectionKey position' streamProjectionProjection state'
+streamProjectionEventHandler ::
+  StreamProjection key position state event ->
+  StreamEvent eventKey position event ->
+  StreamProjection key position state event
+streamProjectionEventHandler StreamProjection {..} event =
+  let Projection {..} = streamProjectionProjection
+      position' = streamEventPosition event
+      state' = projectionEventHandler streamProjectionState (streamEventEvent event)
+   in StreamProjection streamProjectionKey position' streamProjectionProjection state'
 
 -- | Gets the latest projection from a store by querying events from the latest
 -- order key and then applying the events using the Projection's event handler.
-getLatestStreamProjection
-  :: (Monad m, Num position)
-  => EventStoreReader key position m (StreamEvent key position event)
-  -> StreamProjection key position state event
-  -> m (StreamProjection key position state event)
-getLatestStreamProjection (EventStoreReader getEvents') projection@StreamProjection{..} = do
+getLatestStreamProjection ::
+  (Monad m, Num position) =>
+  EventStoreReader key position m (StreamEvent key position event) ->
+  StreamProjection key position state event ->
+  m (StreamProjection key position state event)
+getLatestStreamProjection (EventStoreReader getEvents') projection@StreamProjection {..} = do
   events <- getEvents' (eventsStartingAt streamProjectionKey $ streamProjectionPosition + 1)
   return $ foldl' streamProjectionEventHandler projection events
 
 -- | Use a 'Serializer' to wrap a 'Projection' with event type @event@ so it
 -- uses the @serialized@ type.
-serializedProjection
-  :: Projection state event
-  -> Serializer event serialized
-  -> Projection state serialized
-serializedProjection proj Serializer{..} = projectionMapMaybe deserialize proj
+serializedProjection ::
+  Projection state event ->
+  Serializer event serialized ->
+  Projection state serialized
+serializedProjection proj Serializer {..} = projectionMapMaybe deserialize proj
 
 -- | Transform a 'Projection' when you only have a partial relationship between
 -- the source event type and the target event type.
-projectionMapMaybe
-  :: (eventB -> Maybe eventA)
-  -> Projection state eventA
-  -> Projection state eventB
+projectionMapMaybe ::
+  (eventB -> Maybe eventA) ->
+  Projection state eventA ->
+  Projection state eventB
 projectionMapMaybe f (Projection seed handler) = Projection seed handler'
   where
     handler' state = maybe state (handler state) . f

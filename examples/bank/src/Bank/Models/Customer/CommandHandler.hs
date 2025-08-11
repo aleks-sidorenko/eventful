@@ -1,19 +1,18 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Bank.Models.Customer.CommandHandler
-  ( CustomerCommand (..)
-  , customerCommandHandler
-  ) where
-
-import SumTypesX.TH
-
-import Eventium
+  ( CustomerCommand (..),
+    customerCommandHandler,
+  )
+where
 
 import Bank.Models.Customer.Commands
 import Bank.Models.Customer.Events
 import Bank.Models.Customer.Projection
+import Eventium
+import SumTypesX.TH
 
-constructSumType "CustomerCommand" (defaultSumTypeOptions { sumTypeOptionsTagOptions = AppendTypeNameToTags }) customerCommands
+constructSumType "CustomerCommand" (defaultSumTypeOptions {sumTypeOptionsTagOptions = AppendTypeNameToTags}) customerCommands
 
 handleCustomerCommand :: Customer -> CustomerCommand -> [CustomerEvent]
 handleCustomerCommand customer (CreateCustomerCustomerCommand (CreateCustomer name)) =

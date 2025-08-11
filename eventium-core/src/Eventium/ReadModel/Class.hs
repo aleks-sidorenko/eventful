@@ -2,33 +2,33 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Eventium.ReadModel.Class
-  ( ReadModel (..)
-  , runPollingReadModel
-  ) where
+  ( ReadModel (..),
+    runPollingReadModel,
+  )
+where
 
 import Control.Concurrent (threadDelay)
 import Control.Monad (forever)
-import Control.Monad.IO.Class (liftIO, MonadIO)
-
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Eventium.Store.Class
 
-data ReadModel model serialized m =
-  ReadModel
-  { readModelModel :: model
-  , readModelLatestAppliedSequence :: model -> m SequenceNumber
-  , readModelHandleEvents :: model -> [GlobalStreamEvent serialized] -> m ()
+data ReadModel model serialized m
+  = ReadModel
+  { readModelModel :: model,
+    readModelLatestAppliedSequence :: model -> m SequenceNumber,
+    readModelHandleEvents :: model -> [GlobalStreamEvent serialized] -> m ()
   }
 
 type PollingPeriodSeconds = Double
 
-runPollingReadModel
-  :: (MonadIO m, Monad mstore)
-  => ReadModel model serialized m
-  -> GlobalEventStoreReader mstore serialized
-  -> (forall a. mstore a -> m a)
-  -> PollingPeriodSeconds
-  -> m ()
-runPollingReadModel ReadModel{..} globalReader runStore waitSeconds = forever $ do
+runPollingReadModel ::
+  (MonadIO m, Monad mstore) =>
+  ReadModel model serialized m ->
+  GlobalEventStoreReader mstore serialized ->
+  (forall a. mstore a -> m a) ->
+  PollingPeriodSeconds ->
+  m ()
+runPollingReadModel ReadModel {..} globalReader runStore waitSeconds = forever $ do
   -- Get new events starting from latest applied sequence number
   latestSeq <- readModelLatestAppliedSequence readModelModel
   newEvents <- runStore $ getEvents globalReader (eventsStartingAt () $ latestSeq + 1)
