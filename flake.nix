@@ -45,8 +45,9 @@
           hPkgs.hpack
           stack
           
-          # Database services for testing
-          postgresql
+          # Database libraries/headers for building (no local server needed)
+          postgresql.lib
+          postgresql.dev
           sqlite
           
           # Development tools
@@ -71,9 +72,10 @@
             name = "eventium-all";
             src = ./.;
             ghc = hPkgs.ghc;
-            buildInputs = with pkgs; [ 
-              postgresql 
-              sqlite 
+            buildInputs = with pkgs; [
+              postgresql.lib
+              postgresql.dev
+              sqlite
               zlib
             ];
           };
@@ -93,9 +95,9 @@
             echo "  • hpack                - Generate cabal files from package.yaml"
             echo "  • ghcid                - Continuous compilation"
             echo ""
-            echo "🗄️  Database tools available:"
-            echo "  • psql                 - PostgreSQL client"
-            echo "  • sqlite3              - SQLite client"
+            echo "🗄️  Database libraries available:"
+            echo "  • libpq (from postgresql.lib)"
+            echo "  • sqlite3"
             echo ""
             
             # Generate cabal files from package.yaml files
@@ -114,13 +116,13 @@
               export POSTGRES_PASSWORD=''${POSTGRES_PASSWORD:-password}
               export POSTGRES_DBNAME=''${POSTGRES_DBNAME:-eventium_test}
               echo "Ensuring local PostgreSQL is running (IN_CONTAINER=1)..."
-              bash scripts/start-local-postgres.sh || true
+              bash scripts/start-postgres.sh || true
             fi
           '';
 
           # Environment variables
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
-            pkgs.postgresql
+            pkgs.postgresql.lib
             pkgs.sqlite
             pkgs.zlib
           ];
